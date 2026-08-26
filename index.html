@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>请宝宝挑选心仪陪玩</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#F6F4F0;
+    --surface:#FFFFFF;
+    --ink:#26231E;
+    --ink-2:#6F6A62;
+    --ink-3:#A9A39A;
+    --line:#ECE7E0;
+    --accent:#2E8B7A;
+    --accent-strong:#1F6E60;
+    --accent-soft:#E7F1ED;
+    --shadow:0 1px 2px rgba(35,30,25,.04), 0 10px 28px rgba(35,30,25,.06);
+    --radius:16px;
+    /* 自介卡 / 音介统一比例 2096:1279 ≈ 5:3 */
+    --media-ratio: 2096 / 1279;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans SC',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+    font-size:14px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;color:inherit;cursor:pointer}
+  img{display:block}
+
+  .app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+
+  .view{display:none}
+  .view.active{display:block;animation:fadeIn .28s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* ===== 页头 ===== */
+  .page-head{padding:30px 22px 10px;display:flex;align-items:flex-end;justify-content:space-between}
+  .page-eyebrow{font-size:11px;letter-spacing:.18em;color:var(--ink-3);font-weight:500;margin-bottom:8px}
+  .page-title{font-family:'Noto Serif SC',serif;font-size:24px;font-weight:700;letter-spacing:.02em;margin:0}
+  .page-sub{margin-top:8px;font-size:13px;color:var(--ink-2);font-weight:300}
+  .head-search{
+    width:40px;height:40px;flex:0 0 auto;border-radius:50%;
+    background:var(--surface);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--ink-2);
+    transition:color .18s ease,border-color .18s ease;
+  }
+  .head-search:hover{color:var(--accent);border-color:var(--accent)}
+  .head-search svg{width:19px;height:19px}
+
+  /* ===== 筛选 chip ===== */
+  .chip-row{display:flex;gap:8px;overflow-x:auto;padding:12px 22px 4px;scrollbar-width:none}
+  .chip-row::-webkit-scrollbar{display:none}
+  .chip{
+    flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;
+    padding:8px 15px;border-radius:999px;border:1px solid var(--line);
+    background:var(--surface);color:var(--ink-2);font-size:13px;font-weight:500;
+    transition:all .18s ease;white-space:nowrap;
+  }
+  .chip .cnt{font-size:11px;font-weight:400;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(46,139,122,.22)}
+  .chip.active .cnt{color:rgba(255,255,255,.78)}
+
+  .filter-label{display:flex;align-items:center;gap:8px;padding:14px 22px 2px}
+  .filter-label .tick{width:3px;height:12px;border-radius:2px;background:var(--accent)}
+  .filter-label span{font-size:12px;color:var(--ink-3);letter-spacing:.06em}
+
+  /* ===== 结果计数 ===== */
+  .result-line{display:flex;align-items:center;justify-content:space-between;padding:14px 22px 2px}
+  .result-line .found{font-size:12px;color:var(--ink-2)}
+  .result-line .found b{color:var(--ink);font-weight:600}
+  .result-line .clear{font-size:12px;color:var(--accent);background:none;border:none;padding:2px 4px}
+
+  /* ===== 陪玩卡片 ===== */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding:12px 22px 8px}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(35,30,25,.03);
+    transition:transform .18s ease,box-shadow .18s ease;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+  .card:active{transform:scale(.98)}
+  .card-media{position:relative;aspect-ratio:var(--media-ratio);overflow:hidden;background:var(--line)}
+  .card-media img{width:100%;height:100%;object-fit:cover;object-position:center 22%;transition:transform .4s ease}
+  .card:hover .card-media img{transform:scale(1.03)}
+  .card-media .ph{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    background:linear-gradient(135deg,var(--accent-soft),#F1EDE6);
+  }
+  .card-media .ph .ch{font-family:'Noto Serif SC',serif;font-size:40px;font-weight:600;color:var(--accent)}
+  .card-media .ph span{font-size:11px;color:var(--ink-2);font-weight:300}
+  .card-lane{
+    position:absolute;top:9px;left:9px;padding:2px 9px;border-radius:999px;
+    background:rgba(255,255,255,.92);color:var(--ink);font-size:11px;font-weight:500;letter-spacing:.04em;
+  }
+  .card-status{
+    position:absolute;top:9px;right:9px;display:flex;align-items:center;gap:4px;
+    background:rgba(20,18,15,.42);color:#fff;font-size:10px;padding:2px 8px;border-radius:999px;
+    backdrop-filter:blur(4px);
+  }
+  .card-status .dot{width:5px;height:5px;border-radius:50%;background:#6CD9A5;box-shadow:0 0 0 2px rgba(108,217,165,.35)}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 13px 11px}
+  .card-foot .c-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card-foot .c-price{font-size:13px;font-weight:700;color:var(--accent-strong);flex:0 0 auto;font-variant-numeric:tabular-nums}
+
+  /* ===== 空态 ===== */
+  .empty{padding:56px 24px;text-align:center}
+  .empty-emoji{width:56px;height:56px;margin:0 auto 16px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;color:var(--accent)}
+  .empty-emoji svg{width:26px;height:26px}
+  .empty h3{margin:0;font-size:15px;font-weight:600;color:var(--ink)}
+  .empty p{margin:8px 0 18px;font-size:13px;color:var(--ink-2);font-weight:300}
+  .empty button{background:var(--accent);color:#fff;border:none;padding:9px 22px;border-radius:999px;font-size:13px;font-weight:500}
+
+  /* ===== 服务页 segmented ===== */
+  .seg{display:flex;gap:4px;padding:4px;margin:14px 22px 0;background:rgba(41,36,30,.05);border-radius:14px}
+  .seg-item{
+    flex:1;text-align:center;padding:9px 0;border-radius:11px;border:none;background:transparent;
+    font-size:13px;color:var(--ink-2);font-weight:500;transition:all .18s ease;
+  }
+  .seg-item.active{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 4px rgba(35,30,25,.06)}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin:14px 22px 8px;overflow:hidden}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 4px}
+  .panel-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600}
+  .panel-title .tick{width:3px;height:14px;border-radius:2px;background:var(--accent)}
+  .updated{font-size:11px;color:var(--ink-3);background:var(--bg);padding:3px 9px;border-radius:999px;font-weight:400}
+  .row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--line)}
+  .row:first-of-type{border-top:none}
+  .row .grow{flex:1;min-width:0}
+  .row .r-name{font-size:14px;font-weight:600}
+  .row .r-meta{margin-top:2px;font-size:12px;color:var(--ink-2);font-weight:300}
+  .row .r-price{font-size:14px;font-weight:700;color:var(--accent-strong);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .row .r-note{font-size:11px;color:var(--ink-3);text-align:right;margin-top:2px}
+
+  .p-amount{font-size:14px;font-weight:700;color:var(--ink)}
+  .p-bonus{display:inline-block;margin-left:6px;font-size:11px;font-weight:600;color:var(--accent-strong);background:var(--accent-soft);padding:2px 8px;border-radius:999px}
+  .p-note{font-size:12px;color:var(--ink-2);font-weight:300;margin-top:2px}
+  .panel-tip{padding:12px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-2);font-weight:300;display:flex;gap:8px;align-items:center}
+  .panel-tip svg{width:14px;height:14px;color:var(--accent);flex:0 0 auto}
+
+  .gift-emblem{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#fff;flex:0 0 auto}
+
+  .act{position:relative;margin:14px 22px 8px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
+  .act img{width:100%;aspect-ratio:var(--media-ratio);object-fit:cover}
+  .act-ph{width:100%;aspect-ratio:var(--media-ratio);background:linear-gradient(135deg,#2E8B7A,#6FB7A4 55%,#F0C987)}
+  .act-mask{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,30,26,0) 40%,rgba(20,30,26,.55) 100%)}
+  .act-updated{position:absolute;top:14px;right:14px;font-size:11px;color:#fff;background:rgba(20,18,15,.35);padding:3px 10px;border-radius:999px;backdrop-filter:blur(4px)}
+  .act-text{position:absolute;left:18px;right:18px;bottom:16px;color:#fff}
+  .act-tag{display:inline-block;font-size:10px;letter-spacing:.14em;background:rgba(255,255,255,.2);padding:3px 9px;border-radius:999px;backdrop-filter:blur(4px);margin-bottom:9px}
+  .act-title{font-family:'Noto Serif SC',serif;font-size:23px;font-weight:700;line-height:1.3}
+  .act-sub{font-size:12.5px;font-weight:300;opacity:.92;margin-top:6px}
+
+  /* ===== 搜索页 ===== */
+  .search-box{display:flex;align-items:center;gap:10px;margin:6px 22px 0;padding:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+  .search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(46,139,122,.12)}
+  .search-box svg{width:18px;height:18px;color:var(--ink-3);flex:0 0 auto}
+  .search-box input{flex:1;border:none;outline:none;background:transparent;font-size:14px;color:var(--ink);font-family:inherit}
+  .search-box input::placeholder{color:var(--ink-3);font-weight:300}
+  .hot-row{display:flex;gap:8px;flex-wrap:wrap;padding:14px 22px 0}
+  .hot-row .cap{font-size:12px;color:var(--ink-3);align-self:center;margin-right:2px}
+
+  .group-title{padding:20px 22px 6px;font-size:12px;color:var(--ink-3);font-weight:500;letter-spacing:.08em;display:flex;align-items:center;gap:8px}
+  .group-title .tick{width:3px;height:11px;border-radius:2px;background:var(--accent)}
+
+  .srow{display:flex;align-items:center;gap:13px;padding:12px 22px;cursor:pointer;transition:background .15s ease}
+  .srow:hover{background:rgba(41,36,30,.03)}
+  .srow img{width:50px;height:50px;border-radius:13px;object-fit:cover;object-position:center 22%;flex:0 0 auto;border:1px solid var(--line)}
+  .srow .ph{width:50px;height:50px;border-radius:13px;flex:0 0 auto;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',serif;font-size:20px;color:var(--accent);font-weight:600}
+  .srow .grow{flex:1;min-width:0}
+  .srow .name{font-size:14px;font-weight:600;display:flex;align-items:center;gap:7px}
+  .srow .meta{margin-top:3px;font-size:12px;color:var(--ink-2);font-weight:300;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .srow .chev{color:var(--ink-3);flex:0 0 auto}
+  .srow .chev svg{width:16px;height:16px}
+  .srow .tag-sm{font-size:10px;color:var(--accent-strong);background:var(--accent-soft);padding:2px 7px;border-radius:999px;font-weight:500;flex:0 0 auto}
+  .srow .r-price{font-size:13px;font-weight:700;color:var(--accent-strong);white-space:nowrap}
+
+  /* ===== 底部 Tab ===== */
+  .tabbar{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:520px;
+    display:flex;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);
+    border-top:1px solid var(--line);
+    padding:8px 0 calc(10px + env(safe-area-inset-bottom));z-index:40;
+  }
+  .tab{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:none;border:none;font-size:11px;color:var(--ink-3);font-weight:500;padding:6px 0 2px;
+    transition:color .18s ease;
+  }
+  .tab svg{width:22px;height:22px}
+  .tab.active{color:var(--accent);font-weight:600}
+
+  /* ===== 音介弹层 ===== */
+  .modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(16,13,10,.76);backdrop-filter:blur(8px)}
+  .modal.open{display:flex;animation:fadeIn .22s ease}
+  .modal-box{width:min(88vw,460px);text-align:center}
+  .modal-media{position:relative;border-radius:20px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,.14);box-shadow:0 24px 60px rgba(0,0,0,.4)}
+  .modal-media video{width:100%;aspect-ratio:var(--media-ratio);object-fit:cover;display:block}
+  .modal-media img{width:100%;aspect-ratio:var(--media-ratio);object-fit:cover;object-position:center 22%}
+  .modal-mute{
+    position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;
+    background:rgba(20,18,15,.5);border:none;color:#fff;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);
+  }
+  .modal-mute svg{width:16px;height:16px}
+  .modal-close{
+    position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;
+    background:rgba(255,255,255,.14);border:none;color:#fff;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);
+  }
+  .modal-close svg{width:18px;height:18px}
+  .modal-info{margin-top:16px;color:#fff}
+  .modal-info .m-name{font-family:'Noto Serif SC',serif;font-size:20px;font-weight:600}
+  .modal-info .m-meta{margin-top:6px;font-size:12.5px;color:rgba(255,255,255,.72);font-weight:300}
+  .modal-info .m-hint{margin-top:12px;font-size:11px;color:rgba(255,255,255,.5);font-weight:300}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+  button:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== 视图：挑选陪玩 ===== -->
+  <section class="view active" id="view-browse">
+    <header class="page-head">
+      <div>
+        <div class="page-eyebrow">PEIWAN · SELECT</div>
+        <h1 class="page-title">请宝宝挑选心仪陪玩</h1>
+        <p class="page-sub">按分路挑选，轻触卡片即可查看音介</p>
+      </div>
+      <button class="head-search" id="gotoSearch" aria-label="搜索" onclick="location.hash='search'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      </button>
+    </header>
+
+    <div class="filter-label"><span class="tick"></span><span>价位筛选</span></div>
+    <div class="chip-row" id="priceChips"></div>
+
+    <div class="filter-label"><span class="tick"></span><span>分路分类</span></div>
+    <div class="chip-row" id="laneChips"></div>
+
+    <div class="result-line" id="resultLine"></div>
+    <div class="grid" id="browseGrid"></div>
+  </section>
+
+  <!-- ===== 视图：服务清单 ===== -->
+  <section class="view" id="view-service">
+    <header class="page-head">
+      <div>
+        <div class="page-eyebrow">SERVICE · MENU</div>
+        <h1 class="page-title">服务清单</h1>
+        <p class="page-sub">价格、预存、活动与礼物，一目了然</p>
+      </div>
+    </header>
+    <div class="seg" id="serviceSeg"></div>
+    <div id="serviceContent"></div>
+  </section>
+
+  <!-- ===== 视图：搜索 ===== -->
+  <section class="view" id="view-search">
+    <header class="page-head">
+      <div>
+        <div class="page-eyebrow">SEARCH · ALL</div>
+        <h1 class="page-title">搜索</h1>
+        <p class="page-sub">支持关键字 / 拼音首字母组合，如 dy、zl、gbb</p>
+      </div>
+    </header>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="搜名字 / 分路 / 价位 / 首字母" autocomplete="off">
+    </div>
+    <div class="hot-row" id="hotRow"></div>
+    <div id="searchResult"></div>
+  </section>
+
+  <!-- ===== 底部 Tab ===== -->
+  <nav class="tabbar">
+    <button class="tab active" data-route="browse" onclick="location.hash='browse'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.6-9.3-9A5.2 5.2 0 0 1 12 6.6 5.2 5.2 0 0 1 21.3 11C19 15.4 12 20 12 20z"/></svg>
+      挑选
+    </button>
+    <button class="tab" data-route="service" onclick="location.hash='service'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
+      服务
+    </button>
+    <button class="tab" data-route="search" onclick="location.hash='search'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      搜索
+    </button>
+  </nav>
+
+  <!-- ===== 音介弹层 ===== -->
+  <div class="modal" id="mediaModal" onclick="if(event.target===this)closeMedia()">
+    <button class="modal-close" aria-label="关闭" onclick="closeMedia()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="modal-box">
+      <div class="modal-media">
+        <video id="modalVideo" muted loop playsinline controls preload="metadata"></video>
+        <img id="modalImage" alt="" style="display:none">
+        <button class="modal-mute" id="modalMute" aria-label="声音开关" onclick="toggleMute()">
+          <svg id="muteIconOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8a4 4 0 0 1 0 8M18.6 5.4a8 8 0 0 1 0 13.2"/></svg>
+          <svg id="muteIconOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>
+        </button>
+      </div>
+      <div class="modal-info">
+        <div class="m-name" id="modalName"></div>
+        <div class="m-meta" id="modalMeta"></div>
+        <div class="m-hint" id="modalHint">轻触卡片自动播放 · 点击画面可暂停</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 内容数据：由 data.js 提供（可编辑） -->
+<script src="data.js"></script>
+<script>
+/* ============================================================
+   数据入口
+   ============================================================ */
+const DATA = window.APP_DATA || { lanes:[], prices:[], companions:[], services:{price:[],prepaid:[],gift:[],activity:{}} };
+const LANES  = DATA.lanes && DATA.lanes.length ? ['全部'].concat(DATA.lanes) : ['全部','打野','中路','射手','辅助','上单','全能'];
+const PRICES = ['全部'].concat((DATA.prices && DATA.prices.length ? DATA.prices : [15,18,20,22,25,28,30,35,40]).map(String));
+const COMPANIONS = DATA.companions || [];
+const SERVICES   = DATA.services || {};
+const UPDATE_DATE = DATA.updateDate || '';
+
+/* ============================================================
+   拼音首字母（用于搜索，如 打野→dy、中路→zl）
+   字典未收录的字会跳过（不影响中文关键字搜索）
+   ============================================================ */
+const PY = {
+ '顾':'g','北':'b','一':'y','只':'z','小':'x','鹿':'l','阿':'a','离':'l','桃':'t','林':'l','晚':'w','苏':'s','糖':'t','白':'b','乌':'w','龙':'l','圆':'y','江':'j','吟':'y','洛':'l','栀':'z','打':'d','野':'y','中':'z','路':'l','射':'s','手':'h','辅':'f','助':'z','上':'s','单':'d','全':'q','能':'n','温':'w','柔':'r','带':'d','飞':'f','声':'s','音':'y','好':'h','听':'t','可':'k','爱':'a','陪':'p','聊':'l','耐':'n','心':'x','电':'d','竞':'j','少':'s','女':'n','操':'c','作':'z','怪':'g','玩':'w','梗':'g','御':'y','姐':'j','意':'y','识':'s','流':'l','冷':'l','王':'w','脾':'p','气':'q','话':'h','痨':'l','阳':'y','光':'g','开':'k','朗':'l','搞':'g','笑':'x','元':'y','氛':'f','围':'w','组':'z','高':'g','神':'s','甜':'t','妹':'m','稳':'w','相':'x','处':'c','职':'z','业':'y','级':'j','强':'q','专':'z','老':'l','板':'b','首':'s','选':'x','务':'w','法':'f','师':'s','细':'x','节':'j','拉':'l','满':'m','三':'s','指':'z','丝':'s','滑':'h','软':'r','天':'t','花':'h','板':'b','保':'b','护':'h','欲':'y','公':'g','孙':'s','本':'b','区':'q','大':'d','翻':'f','盘':'p','补':'b','位':'w','百':'b','搭':'d','抗':'k','战':'z','无':'w','敌':'d','快':'k','乐':'l','游':'y','戏':'x','国':'g','服':'f','核':'h','弹':'d','输':'s','出':'c','爆':'b','顶':'d','尖':'j','程':'c','节':'j','奏':'z','萌':'m','之':'z','友':'y','点':'d','谁':'s','都':'d','有':'y','五':'w','排':'p','队':'d','星':'x','耀':'y','者':'z','教':'j','学':'x','包':'b','会':'h','语':'y','指':'z','导':'d','巅':'d','峰':'f','赛':'s','通':'t','宵':'x','段':'d','效':'x','时':'s','充':'c','到':'d','账':'z','新':'x','人':'r','尝':'c','鲜':'x','畅':'c','推':'t','荐':'j','属':'s','荧':'y','棒':'b','玫':'m','瑰':'g','豪':'h','华':'h','跑':'p','车':'c','热':'r','球':'q','浪':'l','漫':'m','火':'h','箭':'j','梦':'m','幻':'h','城':'c','堡':'b','预':'y','存':'c','表':'b','活':'h','动':'d','图':'t','礼':'l','物':'w','单':'d','价':'j','格':'g','更':'g','日':'r','期':'q','折':'z','约':'y','即':'j','享':'x','周':'z','末':'m','黑':'h','划':'h','算':'s','私':'s','领':'l','取':'q','赠':'z','送':'s','余':'y','额':'e','永':'y','久':'j','效':'x','抵':'d','任':'r','随':'s','退':'t','意':'y','感':'g','谢':'x','每':'m','份':'f','面':'m','展':'z','示':'s','你':'n','我':'w','他':'t','又':'y','是':'s','的':'d','和':'h','在':'z','不':'b','来':'l','就':'j','个':'g','把':'b','要':'y','还':'h','去':'q','说':'s','真':'z','钱':'q','元':'y','块':'k','金':'j','银':'y','荣':'r','耀':'y','英':'y','雄':'x','联':'l','盟':'m','瓦':'w','罗':'l','兰':'l','特':'t','士':'s','梯':'t','钻':'z','石':'s','圣':'s','青':'q','山':'s'
+};
+function pyOf(str){
+  return (str||'').split('').map(ch=>{
+    if(/[a-zA-Z0-9]/.test(ch)) return ch.toLowerCase();
+    return PY[ch] || '';
+  }).join('');
+}
+
+/* ============================================================
+   工具：搜索匹配
+   ============================================================ */
+const state = {lane:'全部', price:'全部', sub:'price', q:''};
+const $ = s => document.querySelector(s);
+function norm(s){ return (s||'').toLowerCase().replace(/\s+/g,''); }
+function matchItem(text, py, qRaw){
+  const q = norm(qRaw);
+  if(!q) return true;
+  const t = norm(text);
+  const ascii = q.replace(/[^\x00-\x7F]/g,'');
+  const cjk   = q.replace(/[\x00-\x7F]/g,'');
+  if(cjk && !t.includes(cjk)) return false;
+  if(ascii && !(t.includes(ascii) || norm(py).includes(ascii))) return false;
+  return true;
+}
+
+/* ============================================================
+   渲染：挑选陪玩
+   ============================================================ */
+function renderBrowse(){
+  const laneList  = COMPANIONS.filter(c => state.lane==='全部' || c.lane===state.lane);
+  const priceList = COMPANIONS.filter(c => state.price==='全部' || c.price===Number(state.price));
+
+  $('#priceChips').innerHTML = PRICES.map(p => {
+    const cnt = p==='全部'
+      ? COMPANIONS.filter(c=>state.lane==='全部'||c.lane===state.lane).length
+      : laneList.filter(c=>c.price===Number(p)).length;
+    const label = p==='全部' ? '全部' : p+'r';
+    return `<button class="chip ${state.price===p?'active':''}" onclick="setPrice('${p}')">${label}<span class="cnt">${cnt}</span></button>`;
+  }).join('');
+
+  $('#laneChips').innerHTML = LANES.map(l => {
+    const cnt = l==='全部'
+      ? COMPANIONS.filter(c=>state.price==='全部'||c.price===Number(state.price)).length
+      : priceList.filter(c=>c.lane===l).length;
+    return `<button class="chip ${state.lane===l?'active':''}" onclick="setLane('${l}')">${l}<span class="cnt">${cnt}</span></button>`;
+  }).join('');
+
+  const list = COMPANIONS.filter(c =>
+    (state.lane==='全部' || c.lane===state.lane) &&
+    (state.price==='全部' || c.price===Number(state.price))
+  );
+
+  const hasFilter = state.lane!=='全部' || state.price!=='全部';
+  $('#resultLine').innerHTML = `
+    <span class="found">为你找到 <b>${list.length}</b> 位在线陪玩</span>
+    ${hasFilter ? '<button class="clear" onclick="resetFilter()">重置筛选</button>' : ''}`;
+
+  const grid = $('#browseGrid');
+  if(!list.length){
+    grid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1">
+        <div class="empty-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01"/><path d="M8.5 14.5a4 4 0 0 0 7 0"/></svg></div>
+        <h3>这个组合暂时没有宝宝在线</h3>
+        <p>换个价位或分路看看，或许有惊喜</p>
+        <button onclick="resetFilter()">查看全部陪玩</button>
+      </div>`;
+    return;
+  }
+  grid.innerHTML = list.map(c => cardHTML(c)).join('');
+}
+
+function cardHTML(c){
+  const media = c.image
+    ? `<img src="${c.image}" alt="${c.name}" loading="lazy">`
+    : `<div class="ph"><div class="ch">${(c.name||'?').charAt(0)}</div><span>自介卡待上传</span></div>`;
+  return `
+  <article class="card" onclick="openMedia('${c.id}')" aria-label="${c.name}的陪玩卡片">
+    <div class="card-media">
+      ${media}
+      <span class="card-lane">${c.lane}</span>
+      <span class="card-status"><span class="dot"></span>在线</span>
+    </div>
+    <div class="card-foot">
+      <span class="c-name">${c.name}</span>
+      <span class="c-price">${c.price}r</span>
+    </div>
+  </article>`;
+}
+
+function setPrice(p){ state.price = p; renderBrowse(); }
+function setLane(l){ state.lane = l; renderBrowse(); }
+function resetFilter(){ state.lane='全部'; state.price='全部'; renderBrowse(); }
+
+/* ============================================================
+   渲染：服务清单
+   ============================================================ */
+const SERVICE_TABS = [
+  {key:'price', label:'价格表'},
+  {key:'prepaid', label:'预存表'},
+  {key:'activity', label:'活动图'},
+  {key:'gift', label:'礼物单'}
+];
+function renderService(){
+  $('#serviceSeg').innerHTML = SERVICE_TABS.map(t =>
+    `<button class="seg-item ${state.sub===t.key?'active':''}" onclick="setSub('${t.key}')">${t.label}</button>`
+  ).join('');
+  $('#serviceContent').innerHTML = subContent(state.sub);
+}
+function setSub(k){ state.sub = k; renderService(); }
+
+function subContent(key){
+  const up = UPDATE_DATE ? `<span class="updated">更新于 ${UPDATE_DATE}</span>` : '';
+  if(key==='price'){
+    const rows = (SERVICES.price||[]).map(p => `
+      <div class="row">
+        <div class="grow"><div class="r-name">${p.name}</div><div class="r-meta">${p.meta||''}</div></div>
+        <div class="r-price">${p.price}</div>
+      </div>`).join('');
+    return `
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title"><span class="tick"></span>价格表</div>${up}</div>
+        ${rows}
+        <div class="panel-tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>价格为单局价格，时长与规则以私聊确认为准</div>
+      </div>`;
+  }
+  if(key==='prepaid'){
+    const rows = (SERVICES.prepaid||[]).map(p => `
+      <div class="row">
+        <div class="grow"><div class="p-amount">${p.name}<span class="p-bonus">${p.bonus||''}</span></div><div class="p-note">${p.note||''} · ${p.amount||''}</div></div>
+      </div>`).join('');
+    return `
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title"><span class="tick"></span>预存表</div>${up}</div>
+        ${rows}
+        <div class="panel-tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/></svg>余额永久有效，可抵任意服务，支持随时退</div>
+      </div>`;
+  }
+  if(key==='activity'){
+    const a = SERVICES.activity || {};
+    const media = a.image
+      ? `<img src="${a.image}" alt="活动图">`
+      : `<div class="act-ph"></div>`;
+    return `
+      <div class="act">
+        ${media}
+        <div class="act-mask"></div>
+        <span class="act-updated">更新于 ${UPDATE_DATE||'-'}</span>
+        <div class="act-text">
+          <span class="act-tag">${a.tag||'活动'}</span>
+          <div class="act-title">${a.title||''}</div>
+          <div class="act-sub">${a.sub||''}</div>
+        </div>
+      </div>`;
+  }
+  if(key==='gift'){
+    const rows = (SERVICES.gift||[]).map(g => `
+      <div class="row">
+        <div class="gift-emblem" style="background:${g.color||'#2E8B7A'}">${g.ch||'礼'}</div>
+        <div class="grow"><div class="r-name">${g.name}</div><div class="r-meta">礼物心意，当面展示</div></div>
+        <div class="r-price">${g.price}</div>
+      </div>`).join('');
+    return `
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title"><span class="tick"></span>礼物单</div>${up}</div>
+        ${rows}
+        <div class="panel-tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.6-9.3-9A5.2 5.2 0 0 1 12 6.6 5.2 5.2 0 0 1 21.3 11C19 15.4 12 20 12 20z"/></svg>感谢每一份心意，礼物会当面为宝宝展示</div>
+      </div>`;
+  }
+  return '';
+}
+
+/* ============================================================
+   渲染：搜索
+   ============================================================ */
+const HOT = ['中路','打野','20r','温柔','甜妹','全能'];
+function companionText(c){
+  return [c.name, c.lane, (c.price||'')+'r', c.intro||'', (c.tags||[]).join(' ')].join(' ');
+}
+function renderSearch(){
+  $('#hotRow').innerHTML = `<span class="cap">热门</span>` + HOT.map(h =>
+    `<button class="chip" onclick="doSearch('${h}')">${h}</button>`).join('');
+  const q = state.q.trim();
+  const box = $('#searchResult');
+  if(!q){
+    box.innerHTML = `
+      <div class="empty">
+        <div class="empty-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+        <h3>输入关键字开始查找</h3>
+        <p>支持名字、分路、价位、拼音首字母，如“dy”可找到打野</p>
+      </div>`;
+    return;
+  }
+  const cs = COMPANIONS.filter(c => matchItem(companionText(c), pyOf(companionText(c)), q));
+  const ps = (SERVICES.price||[]).filter(p => matchItem(p.name+' '+(p.meta||'')+' '+p.price, pyOf(p.name+(p.meta||'')+p.price), q));
+  const gs = (SERVICES.gift||[]).filter(g => matchItem(g.name+' '+g.price, pyOf(g.name+g.price), q));
+  const pp = (SERVICES.prepaid||[]).filter(p => matchItem(p.name+' '+(p.amount||'')+' '+(p.note||''), pyOf(p.name+(p.amount||'')+(p.note||'')), q));
+  const total = cs.length + ps.length + gs.length + pp.length;
+  if(!total){
+    box.innerHTML = `
+      <div class="empty">
+        <div class="empty-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01"/><path d="M8.5 14.5a4 4 0 0 0 7 0"/></svg></div>
+        <h3>没有找到相关内容</h3>
+        <p>换个关键词试试，例如“打野”“20r”“温柔”</p>
+      </div>`;
+    return;
+  }
+  let html = '';
+  if(cs.length){
+    html += `<div class="group-title"><span class="tick"></span>陪玩 · ${cs.length}</div>`;
+    html += cs.map(c => {
+      const thumb = c.image ? `<img src="${c.image}" alt="${c.name}">` : `<div class="ph">${(c.name||'?').charAt(0)}</div>`;
+      return `
+      <div class="srow" onclick="openMedia('${c.id}')">
+        ${thumb}
+        <div class="grow">
+          <div class="name">${c.name}<span class="tag-sm">${c.lane}</span></div>
+          <div class="meta">${c.intro||(c.tags||[]).join(' / ')}</div>
+        </div>
+        <div class="r-price">${c.price}r</div>
+        <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </div>`;
+    }).join('');
+  }
+  if(ps.length){
+    html += `<div class="group-title"><span class="tick"></span>服务 · 价格表 ${ps.length}</div>`;
+    html += ps.map(p => `
+      <div class="srow" onclick="jumpService('price')">
+        <div class="grow"><div class="name">${p.name}</div><div class="meta">${p.meta||''}</div></div>
+        <div class="r-price">${p.price}</div>
+      </div>`).join('');
+  }
+  if(pp.length){
+    html += `<div class="group-title"><span class="tick"></span>服务 · 预存表 ${pp.length}</div>`;
+    html += pp.map(p => `
+      <div class="srow" onclick="jumpService('prepaid')">
+        <div class="grow"><div class="name">${p.name}</div><div class="meta">${p.amount||''} · ${p.note||''}</div></div>
+      </div>`).join('');
+  }
+  if(gs.length){
+    html += `<div class="group-title"><span class="tick"></span>服务 · 礼物单 ${gs.length}</div>`;
+    html += gs.map(g => `
+      <div class="srow" onclick="jumpService('gift')">
+        <div class="grow"><div class="name">${g.name}</div></div>
+        <div class="r-price">${g.price}</div>
+      </div>`).join('');
+  }
+  box.innerHTML = html;
+}
+function doSearch(h){
+  state.q = h;
+  $('#searchInput').value = h;
+  renderSearch();
+}
+function jumpService(sub){
+  state.sub = sub;
+  location.hash = 'service';
+  renderService();
+}
+
+/* ============================================================
+   路由：底部 Tab
+   ============================================================ */
+function route(){
+  const h = (location.hash||'#browse').replace('#','') || 'browse';
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id==='view-'+h));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.route===h));
+  if(h==='search'){
+    const inp = $('#searchInput');
+    if(inp) setTimeout(()=>inp.focus(),60);
+  }
+}
+window.addEventListener('hashchange', route);
+
+/* ============================================================
+   音介弹层
+   ============================================================ */
+const modal = $('#mediaModal');
+const modalVideo = $('#modalVideo');
+const modalImage = $('#modalImage');
+function openMedia(id){
+  const c = COMPANIONS.find(x=>x.id===id);
+  if(!c) return;
+  $('#modalName').textContent = c.name;
+  $('#modalMeta').textContent = `${c.lane} · ${c.price}r` + (c.intro ? ' · '+c.intro : '');
+  modalVideo.pause();
+  modalVideo.removeAttribute('src');
+  modalVideo.load();
+  if(c.video){
+    modalImage.style.display = 'none';
+    modalVideo.style.display = 'block';
+    $('#modalMute').style.display = 'flex';
+    modalVideo.poster = c.image || '';
+    modalVideo.muted = true;
+    syncMuteIcon();
+    modalVideo.src = c.video;
+    modal.classList.add('open');
+    $('#modalHint').textContent = '轻触卡片自动播放 · 点击画面可暂停';
+    modalVideo.play().catch(()=>{});
+  } else {
+    modalVideo.style.display = 'none';
+    modalImage.style.display = 'block';
+    $('#modalMute').style.display = 'none';
+    modalImage.src = c.image || '';
+    modal.classList.add('open');
+    $('#modalHint').textContent = '音介视频待上传，上传后点击此处将自动播放';
+  }
+}
+function closeMedia(){
+  modal.classList.remove('open');
+  modalVideo.pause();
+  modalVideo.removeAttribute('src');
+  modalVideo.load();
+}
+function toggleMute(){
+  modalVideo.muted = !modalVideo.muted;
+  syncMuteIcon();
+}
+function syncMuteIcon(){
+  $('#muteIconOn').style.display = modalVideo.muted ? 'none' : 'block';
+  $('#muteIconOff').style.display = modalVideo.muted ? 'block' : 'none';
+}
+
+/* ============================================================
+   初始化
+   ============================================================ */
+$('#searchInput').addEventListener('input', e => {
+  state.q = e.target.value;
+  renderSearch();
+});
+renderBrowse();
+renderService();
+renderSearch();
+route();
+</script>
+</body>
+</html>
