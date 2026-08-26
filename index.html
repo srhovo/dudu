@@ -27,10 +27,10 @@
             min-height:100vh;
             position:relative;
         }
-        /* 左上角问好按钮 */
+        /*左上角问好按钮*/
         .help-btn{
             position:fixed;
-            left:16px;
+            left:max(16px, calc(50vw - 360px +16px));
             top:16px;
             z-index:99;
             background:#ffe6ef;
@@ -41,7 +41,7 @@
             font-size:20px;
             box-shadow:0 2px 8px #00000022;
         }
-        /* 弹窗遮罩 */
+        /*弹窗遮罩*/
         .modal-mask{
             position:fixed;
             inset:0;
@@ -73,7 +73,7 @@
             background:#f4c8d8;
             font-size:16px;
         }
-        /* club标题 自适应容器【重点修改】 */
+        /*club标题区域*/
         .club-header-wrap{
             width:100%;
             padding:12px 16px;
@@ -81,6 +81,7 @@
         .club-logo-img{
             width:100%;
             display:block;
+            aspect-ratio:5/3;
             object-fit:contain;
         }
         .club-logo-text{
@@ -89,7 +90,7 @@
             font-size:32px;
             color:#d878a1;
         }
-        /* 分路按钮组 */
+        /*分路按钮组*/
         .lane-group{
             padding:8px 16px;
             display:flex;
@@ -107,7 +108,7 @@
             color:#fff;
             border-color:#c49cd8;
         }
-        /* 价格筛选栏 */
+        /*价格筛选栏*/
         .price-filter-wrap{
             padding:10px 16px;
             overflow-x:auto;
@@ -128,7 +129,7 @@
             color:white;
             border-color:#a068c4;
         }
-        /* 陪玩双列卡片 */
+        /*陪玩双列卡片*/
         .card-grid{
             padding:12px 12px;
             display:grid;
@@ -143,9 +144,11 @@
         }
         .card-img-wrap{
             width:100%;
+            aspect-ratio:5/3;
         }
         .card-img{
             width:100%;
+            height:100%;
             display:block;
             object-fit:contain;
         }
@@ -160,13 +163,14 @@
             font-size:13px;
             color:#777;
         }
-        /* 视频弹窗 */
+        /*视频弹窗*/
         .video-modal video{
             width:100%;
+            aspect-ratio:5/3;
             display:block;
             border-radius:12px;
         }
-        /* 服务页面 图片占位容器【全部自适应】 */
+        /*服务页面图片占位*/
         .service-grid{
             padding:16px;
             display:flex;
@@ -177,10 +181,10 @@
             width:100%;
             border:2px dashed #dcd2e2;
             border-radius:14px;
-            padding:8px;
         }
         .service-img{
             width:100%;
+            aspect-ratio:5/3;
             display:block;
             object-fit:contain;
         }
@@ -188,8 +192,12 @@
             text-align:center;
             padding:30px 0;
             color:#aaa;
+            aspect-ratio:5/3;
+            display:flex;
+            align-items:center;
+            justify-content:center;
         }
-        /* 管理层页面 */
+        /*管理层页面*/
         .manager-wrap{
             padding:20px 16px;
         }
@@ -211,7 +219,7 @@
             color:#666;
             line-height:1.6;
         }
-        /* 搜索页 */
+        /*搜索页*/
         .search-page h2{
             font-family:"ZCOOL KuaiLe",cursive;
             text-align:center;
@@ -227,7 +235,7 @@
             border:1px solid #ddd;
             font-size:16px;
         }
-        /* tab底部导航 */
+        /*底部tab导航*/
         .tab-bar{
             position:fixed;
             bottom:0;
@@ -249,7 +257,7 @@
         .tab-item.active{
             color:#b068d4;
         }
-        /* 页面视图 */
+        /*页面视图*/
         .page{
             display:none;
         }
@@ -274,7 +282,7 @@
 <div class="app-wrap">
     <button class="help-btn" id="helpBtn">🎀</button>
 
-    <!-- 注意事项弹窗 -->
+    <!--注意事项弹窗-->
     <div class="modal-mask" id="noticeModal">
         <div class="modal-card">
             <h3 style="text-align:center;margin-bottom:16px;">🎀注意事项𝜗𝜚˚⋆𓈈 𐙚 ̊˚⋆𓈈</h3>
@@ -289,7 +297,7 @@
         </div>
     </div>
 
-    <!-- 视频播放弹窗 -->
+    <!--视频播放弹窗-->
     <div class="modal-mask" id="videoModal">
         <div class="modal-card video-modal">
             <video id="playVideo" controls></video>
@@ -298,14 +306,12 @@
         </div>
     </div>
 
-    <!-- toast提示 -->
+    <!--toast提示-->
     <div class="toast" id="toast"></div>
 
-    <!-- page1 挑选陪玩 -->
+    <!--page1挑选陪玩-->
     <div class="page active" id="page1">
-        <div class="club-header-wrap" id="clubHeader">
-            <!-- 图片自动渲染，无图显示文字 -->
-        </div>
+        <div class="club-header-wrap" id="clubHeader"></div>
         <div class="lane-group" id="laneWrap"></div>
         <div class="price-filter-wrap">
             <div class="price-scroll" id="priceWrap"></div>
@@ -313,12 +319,12 @@
         <div class="card-grid" id="cardWrap"></div>
     </div>
 
-    <!-- page2 服务清单 -->
+    <!--page2服务清单-->
     <div class="page" id="page2">
         <div class="service-grid" id="serviceWrap"></div>
     </div>
 
-    <!-- page3 搜索 -->
+    <!--page3搜索-->
     <div class="page" id="page3">
         <div class="search-page">
             <h2>养成系club</h2>
@@ -327,7 +333,7 @@
         </div>
     </div>
 
-    <!-- page4 管理层信息 -->
+    <!--page4管理层信息-->
     <div class="page" id="page4">
         <div class="manager-wrap">
             <div class="manager-card">
@@ -346,7 +352,7 @@
         </div>
     </div>
 
-    <!--底部tab栏 -->
+    <!--底部tab栏-->
     <div class="tab-bar">
         <div class="tab-item active" data-page="page1">挑选陪玩</div>
         <div class="tab-item" data-page="page2">服务清单</div>
@@ -357,7 +363,7 @@
 
 <script src="./data.js"></script>
 <script>
-// ========== 图片自适应加载逻辑 ==========
+//渲染club标题
 async function renderClubHeader(){
     const headerDom = document.getElementById('clubHeader');
     const tryList = ['assets/club-logo.png','assets/club-logo.jpg','assets/club-logo.jpeg','assets/club-logo.webp'];
@@ -377,6 +383,7 @@ async function renderClubHeader(){
     }
 }
 
+//渲染服务页面
 async function renderServicePage(){
     const wrap = document.getElementById('serviceWrap');
     const serviceFiles = [
@@ -407,7 +414,7 @@ async function renderServicePage(){
     wrap.innerHTML = html;
 }
 
-// 渲染分路按钮
+//渲染分路按钮
 function renderLane(){
     const laneWrap = document.getElementById('laneWrap');
     let html = `<button class="lane-btn active" data-lane="all">全部分路</button>`;
