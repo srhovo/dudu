@@ -1,618 +1,625 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>养成系club</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #f8f7fa;
-            color:#333;
-            min-height:100vh;
-            padding-bottom:80px;
-        }
-        .app-wrap{
-            max-width:720px;
-            margin:0 auto;
-            background:#fff;
-            min-height:100vh;
-            position:relative;
-        }
-        /*左上角问好按钮*/
-        .help-btn{
-            position:fixed;
-            left:max(16px, calc(50vw - 360px +16px));
-            top:16px;
-            z-index:99;
-            background:#ffe6ef;
-            border:none;
-            width:42px;
-            height:42px;
-            border-radius:50%;
-            font-size:20px;
-            box-shadow:0 2px 8px #00000022;
-        }
-        /*弹窗遮罩*/
-        .modal-mask{
-            position:fixed;
-            inset:0;
-            background:#00000060;
-            z-index:100;
-            display:none;
-            align-items:center;
-            justify-content:center;
-            padding:20px;
-        }
-        .modal-mask.show{
-            display:flex;
-        }
-        .modal-card{
-            width:100%;
-            max-width:520px;
-            background:#fff;
-            border-radius:18px;
-            padding:24px;
-            max-height:85vh;
-            overflow-y:auto;
-        }
-        .modal-close{
-            margin-top:16px;
-            width:100%;
-            padding:12px;
-            border-radius:12px;
-            border:none;
-            background:#f4c8d8;
-            font-size:16px;
-        }
-        /*club标题区域*/
-        .club-header-wrap{
-            width:100%;
-            padding:12px 16px;
-        }
-        .club-logo-img{
-            width:100%;
-            display:block;
-            aspect-ratio:5/3;
-            object-fit:contain;
-        }
-        .club-logo-text{
-            text-align:center;
-            font-family:"ZCOOL KuaiLe",cursive;
-            font-size:32px;
-            color:#d878a1;
-        }
-        /*分路按钮组*/
-        .lane-group{
-            padding:8px 16px;
-            display:flex;
-            gap:8px;
-            flex-wrap:wrap;
-        }
-        .lane-btn{
-            padding:8px 14px;
-            border-radius:999px;
-            border:1px solid #e2d8e8;
-            background:#f7f2fa;
-        }
-        .lane-btn.active{
-            background:#d8b8e8;
-            color:#fff;
-            border-color:#c49cd8;
-        }
-        /*价格筛选栏*/
-        .price-filter-wrap{
-            padding:10px 16px;
-            overflow-x:auto;
-        }
-        .price-scroll{
-            display:flex;
-            gap:8px;
-            width:max-content;
-        }
-        .price-tag{
-            padding:7px 12px;
-            border-radius:8px;
-            border:1px solid #ddd;
-            white-space:nowrap;
-        }
-        .price-tag.active{
-            background:#b884d8;
-            color:white;
-            border-color:#a068c4;
-        }
-        /*陪玩双列卡片*/
-        .card-grid{
-            padding:12px 12px;
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:14px;
-        }
-        .play-card{
-            background:#fff;
-            border-radius:14px;
-            overflow:hidden;
-            box-shadow:0 1px 6px #00000015;
-        }
-        .card-img-wrap{
-            width:100%;
-            aspect-ratio:5/3;
-        }
-        .card-img{
-            width:100%;
-            height:100%;
-            display:block;
-            object-fit:contain;
-        }
-        .card-info{
-            padding:8px 10px;
-        }
-        .card-name{
-            font-weight:bold;
-            font-size:15px;
-        }
-        .card-meta{
-            font-size:13px;
-            color:#777;
-        }
-        /*视频弹窗*/
-        .video-modal video{
-            width:100%;
-            aspect-ratio:5/3;
-            display:block;
-            border-radius:12px;
-        }
-        /*服务页面图片占位*/
-        .service-grid{
-            padding:16px;
-            display:flex;
-            flex-direction:column;
-            gap:20px;
-        }
-        .service-item-wrap{
-            width:100%;
-            border:2px dashed #dcd2e2;
-            border-radius:14px;
-        }
-        .service-img{
-            width:100%;
-            aspect-ratio:5/3;
-            display:block;
-            object-fit:contain;
-        }
-        .service-tip{
-            text-align:center;
-            padding:30px 0;
-            color:#aaa;
-            aspect-ratio:5/3;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-        }
-        /*管理层页面*/
-        .manager-wrap{
-            padding:20px 16px;
-        }
-        .manager-card{
-            background:#f7f2fa;
-            border-radius:12px;
-            padding:14px;
-            margin-bottom:12px;
-        }
-        .wx-copy{
-            margin-top:6px;
-            background:#e8dcf0;
-            padding:10px;
-            border-radius:8px;
-            cursor:pointer;
-        }
-        .tip-text{
-            margin-top:24px;
-            color:#666;
-            line-height:1.6;
-        }
-        /*搜索页*/
-        .search-page h2{
-            font-family:"ZCOOL KuaiLe",cursive;
-            text-align:center;
-            font-size:28px;
-            color:#d878a1;
-            padding:16px 0;
-        }
-        .search-input{
-            width:calc(100% - 32px);
-            margin:0 16px;
-            padding:12px;
-            border-radius:10px;
-            border:1px solid #ddd;
-            font-size:16px;
-        }
-        /*底部tab导航*/
-        .tab-bar{
-            position:fixed;
-            bottom:0;
-            left:50%;
-            transform:translateX(-50%);
-            max-width:720px;
-            width:100%;
-            background:#ffffff;
-            display:flex;
-            border-top:1px solid #eee;
-            z-index:80;
-        }
-        .tab-item{
-            flex:1;
-            text-align:center;
-            padding:12px 4px;
-            font-size:14px;
-        }
-        .tab-item.active{
-            color:#b068d4;
-        }
-        /*页面视图*/
-        .page{
-            display:none;
-        }
-        .page.active{
-            display:block;
-        }
-        .toast{
-            position:fixed;
-            left:50%;
-            top:40%;
-            transform:translate(-50%,-50%);
-            background:#222222cc;
-            color:white;
-            padding:10px 20px;
-            border-radius:8px;
-            z-index:200;
-            display:none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>养成系club · 请宝宝挑选心仪陪玩</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=ZCOOL+KuaiLe&display=swap">
+<style>
+  :root{
+    --bg:#F6F4F0;
+    --surface:#FFFFFF;
+    --ink:#26231E;
+    --ink-2:#6F6A62;
+    --ink-3:#A9A39A;
+    --line:#ECE7E0;
+    --accent:#2E8B7A;
+    --accent-strong:#1F6E60;
+    --accent-soft:#E7F1ED;
+    --pink:#C24A6B;
+    --pink-soft:#F3DDE3;
+    --shadow:0 1px 2px rgba(35,30,25,.04), 0 10px 28px rgba(35,30,25,.06);
+    --radius:16px;
+    /* 自介卡 / 音介 / 服务图统一比例 2096:1279 ≈ 5:3 */
+    --media-ratio: 2096 / 1279;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;touch-action:manipulation;-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans SC',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+    font-size:14px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+  img{display:block}
+
+  .font-cute{font-family:'ZCOOL KuaiLe','Noto Sans SC','PingFang SC',sans-serif}
+
+  .app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;padding:calc(env(safe-area-inset-top) + 66px) 0 calc(96px + env(safe-area-inset-bottom))}
+
+  .view{display:none}
+  .view.active{display:block;animation:fadeIn .28s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* ===== 左上角问好按钮 ===== */
+  .greet-wrap{position:fixed;top:calc(env(safe-area-inset-top)+12px);left:max(12px,calc(50vw - 260px));z-index:50}
+  .greet-btn{
+    width:40px;height:40px;border-radius:50%;border:none;background:var(--pink-soft);color:var(--pink);font-size:18px;box-shadow:0 2px 8px rgba(194,74,107,.18);
+    display:flex;align-items:center;justify-content:center;
+  }
+
+  /* ===== 顶部logo区域 ===== */
+  .club-header{padding:0 16px 12px;text-align:center}
+  .club-logo-wrap{width:100%;border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+  .club-logo{width:100%;aspect-ratio:var(--media-ratio);object-fit:contain}
+  .club-logo-placeholder{
+    width:100%;aspect-ratio:var(--media-ratio);display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent-strong);
+    font-size:20px;font-weight:600;font-family:'ZCOOL KuaiLe',sans-serif;
+  }
+
+  /* ===== 筛选栏通用 ===== */
+  .filter-bar{padding:0 16px 10px}
+  .filter-label{font-size:13px;color:var(--ink-2);margin:0 0 6px}
+  .filter-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .filter-scroll::-webkit-scrollbar{height:3px}
+  .filter-scroll::-webkit-scrollbar-thumb{background:#ddd;border-radius:9px}
+  .chip{
+    flex:0 0 auto;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;white-space:nowrap;
+  }
+  .chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* ===== 卡片网格 ===== */
+  .grid-wrap{padding:0 12px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .card{
+    background:var(--surface);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+  }
+  .card-media{width:100%;aspect-ratio:var(--media-ratio);background:#f7f5f1;position:relative}
+  .card-media img{width:100%;height:100%;object-fit:cover}
+  .card-info{padding:8px 10px}
+  .card-name{font-weight:600;font-size:15px;margin:0 0 2px}
+  .card-meta{font-size:12px;color:var(--ink-3)}
+
+  /* ===== 空状态 ===== */
+  .empty{padding:40px 20px;text-align:center;color:var(--ink-3)}
+  .empty h4{font-size:16px;font-weight:500;margin:0 0 8px;color:var(--ink-2)}
+  .empty p{margin:0 0 14px}
+  .empty button{
+    padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:14px;
+  }
+
+  /* ===== 搜索页 ===== */
+  .search-wrap{padding:12px 16px}
+  .search-input{
+    width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:15px;outline:none;
+  }
+
+  /* ===== 服务清单页 ===== */
+  .service-list{padding:12px 16px;display:flex;flex-direction:column;gap:14px}
+  .service-item{
+    border-radius:var(--radius);overflow:hidden;background:#fff;box-shadow:var(--shadow);
+  }
+  .service-media{width:100%;aspect-ratio:var(--media-ratio);background:#f7f5f1}
+  .service-media img{width:100%;height:100%;object-fit:contain}
+  .service-placeholder{
+    width:100%;aspect-ratio:var(--media-ratio);display:flex;align-items:center;justify-content:center;color:var(--ink-3);
+  }
+
+  /* ===== 管理层页面 ===== */
+  .mgmt-wrap{padding:16px}
+  .mgmt-card{
+    background:#fff;border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:var(--shadow);
+  }
+  .mgmt-title{font-weight:600;font-size:15px;margin-bottom:4px}
+  .copy-wx{
+    margin-top:6px;padding:9px 12px;background:var(--accent-soft);border-radius:10px;color:var(--accent-strong);cursor:pointer;font-size:14px;
+  }
+  .mgmt-tip{margin-top:18px;color:var(--ink-2);line-height:1.6}
+
+  /* ===== 底部tab栏 ===== */
+  .tab-bar{
+    position:fixed;left:0;right:0;bottom:0;
+    padding-bottom:env(safe-area-inset-bottom);
+    background:#fff;border-top:1px solid var(--line);
+    z-index:40;
+  }
+  .tab-inner{max-width:520px;margin:0 auto;display:flex}
+  .tab-item{
+    flex:1;text-align:center;padding:10px 4px;font-size:13px;color:var(--ink-2);
+  }
+  .tab-item.active{color:var(--accent);font-weight:600}
+
+  /* ===== 音介弹窗 ===== */
+  .modal-mask{
+    position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:100;
+    display:flex;align-items:center;justify-content:center;padding:16px;
+    opacity:0;pointer-events:none;transition:opacity .24s ease;
+  }
+  .modal-mask.open{opacity:1;pointer-events:auto}
+  .modal-card{
+    width:100%;max-width:460px;background:#fff;border-radius:var(--radius);overflow:hidden;transform:translateY(8px);transition:transform .24s ease;
+  }
+  .modal-mask.open .modal-card{transform:none}
+  .modal-video-wrap{position:relative;width:100%;aspect-ratio:var(--media-ratio);background:#000}
+  .modal-video{width:100%;height:100%;object-fit:contain}
+  .modal-name{padding:12px 16px 6px;font-size:16px;font-weight:600}
+  .modal-desc{padding:0 16px 12px;color:var(--ink-2);font-size:13px;line-height:1.55}
+  .modal-ctrl-bar{display:flex;gap:10px;padding:0 16px 16px;align-items:center}
+  .modal-close{
+    flex:1;padding:10px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-size:15px;
+  }
+  .mute-btn{
+    width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;
+  }
+
+  /* ===== 注意事项弹窗 ===== */
+  .note-modal{
+    position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:100;
+    display:flex;align-items:center;justify-content:center;padding:16px;
+    opacity:0;pointer-events:none;transition:opacity .24s ease;
+  }
+  .note-modal.open{opacity:1;pointer-events:auto}
+  .note-card{
+    width:100%;max-width:440px;background:#fff;border-radius:var(--radius);overflow:hidden;transform:translateY(8px);transition:transform .24s ease;
+  }
+  .note-modal.open .note-card{transform:none}
+  .note-title{padding:16px 16px 8px;font-size:17px;font-weight:600;text-align:center}
+  .note-list{padding:0 16px 12px;max-height:60vh;overflow-y:auto}
+  .note-item{display:flex;gap:8px;margin-bottom:10px;line-height:1.55}
+  .note-item .num{flex:0 0 20px;font-weight:600;color:var(--accent)}
+  .note-close{margin:0 16px 16px;width:calc(100% - 32px);padding:10px;border-radius:12px;border:none;background:var(--pink);color:#fff;font-size:15px}
+
+  /* ===== toast ===== */
+  .toast{
+    position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);
+    background:rgba(38,35,30,.82);color:#fff;padding:10px 18px;border-radius:10px;z-index:200;
+    font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;
+  }
+  .toast.show{opacity:1}
+</style>
 </head>
 <body>
-<div class="app-wrap">
-    <button class="help-btn" id="helpBtn">🎀</button>
+<div class="app">
 
-    <!--注意事项弹窗-->
-    <div class="modal-mask" id="noticeModal">
-        <div class="modal-card">
-            <h3 style="text-align:center;margin-bottom:16px;">🎀注意事项𝜗𝜚˚⋆𓈈 𐙚 ̊˚⋆𓈈</h3>
-            <div style="line-height:1.8;">
-                <p>1.双轨结算取低&nbsp;&nbsp;小时单全段位无溢价</p>
-                <p>2.最后结算以同车最高🌟板宝为准</p>
-                <p>3.养成系支持混团组车，但需他团陪玩至少为技术级别以上o！</p>
-                <p>4.游戏中宝宝若出现挂机、中途退出，输赢全结</p>
-                <p>5.若强制陪玩选择非主玩分路及不常用英雄，输赢全结</p>
-            </div>
-            <button class="modal-close" id="closeNotice">关闭</button>
-        </div>
+  <!-- 左上角问好按钮 -->
+  <div class="greet-wrap">
+    <button class="greet-btn" id="greetBtn">🎀</button>
+  </div>
+
+  <!-- 浏览页 -->
+  <div class="view active" id="viewBrowse">
+    <div class="club-header">
+      <div class="club-logo-wrap">
+        <div class="club-logo-placeholder" id="clubLogoBox">养成系club</div>
+      </div>
     </div>
 
-    <!--视频播放弹窗-->
-    <div class="modal-mask" id="videoModal">
-        <div class="modal-card video-modal">
-            <video id="playVideo" controls></video>
-            <div id="videoName" style="text-align:center;margin:10px 0;"></div>
-            <button class="modal-close" id="closeVideo">关闭</button>
-        </div>
+    <div class="filter-bar">
+      <div class="filter-label">价位筛选</div>
+      <div class="filter-scroll" id="priceScroll"></div>
     </div>
 
-    <!--toast提示-->
-    <div class="toast" id="toast"></div>
-
-    <!--page1挑选陪玩-->
-    <div class="page active" id="page1">
-        <div class="club-header-wrap" id="clubHeader"></div>
-        <div class="lane-group" id="laneWrap"></div>
-        <div class="price-filter-wrap">
-            <div class="price-scroll" id="priceWrap"></div>
-        </div>
-        <div class="card-grid" id="cardWrap"></div>
+    <div class="filter-bar">
+      <div class="filter-label">分路分类</div>
+      <div class="filter-scroll" id="laneScroll"></div>
     </div>
 
-    <!--page2服务清单-->
-    <div class="page" id="page2">
-        <div class="service-grid" id="serviceWrap"></div>
+    <div class="grid-wrap">
+      <div id="browseStat" style="padding:0 0 10px;font-size:13px;color:var(--ink-2)"></div>
+      <div class="grid" id="browseGrid"></div>
+      <div class="empty" id="browseEmpty" style="display:none">
+        <h4>这个组合暂时没有宝宝在线</h4>
+        <p>换个价位或分路看看，或许有惊喜</p>
+        <button id="browseResetBtn">查看全部陪玩</button>
+      </div>
     </div>
+  </div>
 
-    <!--page3搜索-->
-    <div class="page" id="page3">
-        <div class="search-page">
-            <h2>养成系club</h2>
-            <input class="search-input" id="searchInput" placeholder="输入名字/拼音首字母搜索">
-            <div class="card-grid" id="searchResult"></div>
-        </div>
-    </div>
+  <!-- 服务清单页 -->
+  <div class="view" id="viewService">
+    <div class="service-list" id="serviceList"></div>
+  </div>
 
-    <!--page4管理层信息-->
-    <div class="page" id="page4">
-        <div class="manager-wrap">
-            <div class="manager-card">
-                <div>团长 - 嘟嘟</div>
-                <div class="wx-copy" data-wx="keke-aoo">微信号：keke-aoo （点击复制）</div>
-            </div>
-            <div class="manager-card">
-                <div>副团 - 小翎</div>
-                <div class="wx-copy" data-wx="_Elysia0304">微信号：_Elysia0304 （点击复制）</div>
-            </div>
-            <div class="manager-card">
-                <div>管理 - 小忆</div>
-                <div class="wx-copy" data-wx="YIk-xjw-fno4u">微信号：YIk-xjw-fno4u （点击复制）</div>
-            </div>
-            <p class="tip-text">☁️有任何问题都可以向管理层询问，我们会竭力保证宝宝们的游戏体验</p>
-        </div>
+  <!-- 搜索页 -->
+  <div class="view" id="viewSearch">
+    <div class="search-wrap">
+      <input class="search-input" id="searchInput" placeholder="输入名字/拼音首字母搜索">
     </div>
+    <div class="grid-wrap">
+      <div class="grid" id="searchGrid"></div>
+      <div class="empty" id="searchEmpty" style="display:none">
+        <h4>未找到匹配的陪玩</h4>
+        <p>试试换关键词搜索</p>
+      </div>
+    </div>
+  </div>
 
-    <!--底部tab栏-->
-    <div class="tab-bar">
-        <div class="tab-item active" data-page="page1">挑选陪玩</div>
-        <div class="tab-item" data-page="page2">服务清单</div>
-        <div class="tab-item" data-page="page3">搜索</div>
-        <div class="tab-item" data-page="page4">管理层</div>
+  <!-- 管理层页 -->
+  <div class="view" id="viewManagement">
+    <div class="mgmt-wrap" id="mgmtWrap"></div>
+  </div>
+
+  <!-- 底部tab -->
+  <div class="tab-bar">
+    <div class="tab-inner">
+      <div class="tab-item active" data-to="viewBrowse">请宝宝挑选心仪陪玩</div>
+      <div class="tab-item" data-to="viewService">服务清单</div>
+      <div class="tab-item" data-to="viewSearch">搜索</div>
+      <div class="tab-item" data-to="viewManagement">管理层</div>
     </div>
+  </div>
+
+  <!-- 音介弹窗 -->
+  <div class="modal-mask" id="videoModal">
+    <div class="modal-card">
+      <div class="modal-video-wrap">
+        <video class="modal-video" id="modalVideo" playsinline webkit-playsinline></video>
+      </div>
+      <div class="modal-name" id="modalName"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <div class="modal-ctrl-bar">
+        <button class="mute-btn" id="muteBtn">
+          <span id="muteIconOn">🔊</span>
+          <span id="muteIconOff" style="display:none">🔇</span>
+        </button>
+        <button class="modal-close" id="modalCloseBtn">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 注意事项弹窗 -->
+  <div class="note-modal" id="noteModal">
+    <div class="note-card">
+      <div class="note-title" id="noteTitle"></div>
+      <div class="note-list" id="noteList"></div>
+      <button class="note-close" id="noteCloseBtn">关闭</button>
+    </div>
+  </div>
+
+  <!-- toast -->
+  <div class="toast" id="toast"></div>
 </div>
 
-<script src="./data.js"></script>
 <script>
-//渲染club标题
-async function renderClubHeader(){
-    const headerDom = document.getElementById('clubHeader');
-    const tryList = ['assets/club-logo.png','assets/club-logo.jpg','assets/club-logo.jpeg','assets/club-logo.webp'];
-    let ok = false;
-    for(let src of tryList){
-        try{
-            const res = await fetch(src,{method:"HEAD"});
-            if(res.ok){
-                headerDom.innerHTML = `<img class="club-logo-img" src="${src}" alt="club标题">`;
-                ok=true;
-                break;
-            }
-        }catch(e){}
+// ============================================================
+// 工具函数
+// ============================================================
+const $ = s=>document.querySelector(s);
+const $$ = s=>Array.from(document.querySelectorAll(s));
+
+function toast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1600);
+}
+
+async function copyText(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    toast('已复制微信号');
+  }catch(e){
+    toast('复制失败，请手动复制');
+  }
+}
+
+// ============================================================
+// 数据（业务数据，可修改）
+// ============================================================
+const CLUB_LOGO_CANDIDATES = [
+  'assets/club-logo.png',
+  'assets/club-logo.jpg',
+  'assets/club-logo.jpeg',
+  'assets/club-logo.webp',
+];
+
+const SERVICE_ASSETS = [
+  {name:'价格表',file:'assets/services/price.png'},
+  {name:'预存表',file:'assets/services/prepaid.png'},
+  {name:'礼物单',file:'assets/services/gift.png'},
+  {name:'活动图',file:'assets/services/activity.png'},
+];
+
+const MANAGEMENT_LIST = [
+  {title:'团长 - 嘟嘟',wx:'keke-aoo'},
+  {title:'副团 - 小翎',wx:'_Elysia0304'},
+  {title:'管理 - 小忆',wx:'YIk-xjw-fno4u'},
+];
+
+const NOTES = {
+  title:'🎀注意事项𝜗𝜚˚⋆𓈈 𐙚 ̊˚⋆𓈈',
+  items:[
+    '双轨结算取低 小时单全段位无溢价',
+    '最后结算以同车最高🌟板宝为准',
+    '养成系支持混团组车，但需他团陪玩至少为技术级别以上o！',
+    '游戏中宝宝若出现挂机、中途退出，输赢全结',
+    '若强制陪玩选择非主玩分路及不常用英雄，输赢全结',
+  ]
+};
+
+// ============================================================
+// 状态
+// ============================================================
+const state = {
+  price:'all',
+  lane:'all',
+  q:'',
+};
+
+// ============================================================
+// 检测资源是否可访问
+// ============================================================
+async function tryFetch(url){
+  try{
+    const r = await fetch(url,{method:'HEAD',cache:'no-store'});
+    return r.ok;
+  }catch(e){return false;}
+}
+
+async function detectAssets(){
+  // club logo
+  for(const src of CLUB_LOGO_CANDIDATES){
+    const ok = await tryFetch(src);
+    if(ok){
+      $('#clubLogoBox').innerHTML = `<img class="club-logo" src="${src}" alt="club-logo">`;
+      break;
     }
-    if(!ok){
-        headerDom.innerHTML = `<div class="club-logo-text">养成系club</div>`;
+  }
+}
+
+// ============================================================
+// 渲染俱乐部头部
+// ============================================================
+function renderClub(){
+  // logo由detectAssets异步填充
+}
+
+// ============================================================
+// 渲染筛选：价位、分路
+// ============================================================
+function renderBrowse(){
+  const pricesSet = new Set();
+  const lanesSet = new Set();
+  window.companions.forEach(it=>{
+    pricesSet.add(it.price);
+    it.lanes.forEach(l=>lanesSet.add(l));
+  });
+  const priceList = Array.from(pricesSet).sort((a,b)=>Number(a)-Number(b));
+  const laneList = Array.from(lanesSet);
+
+  // price chips
+  const priceHtml = [`<div class="chip ${state.price==='all'?'active':''}" data-val="all">全部</div>`];
+  priceList.forEach(p=>priceHtml.push(`<div class="chip ${state.price===p?'active':''}" data-val="${p}">${p}r</div>`));
+  $('#priceScroll').innerHTML = priceHtml.join('');
+
+  // lane chips
+  const laneHtml = [`<div class="chip ${state.lane==='all'?'active':''}" data-val="all">全部</div>`];
+  laneList.forEach(l=>laneHtml.push(`<div class="chip ${state.lane===l?'active':''}" data-val="${l}">${l}</div>`));
+  $('#laneScroll').innerHTML = laneHtml.join('');
+
+  // 筛选结果
+  const filtered = getBrowseList();
+  $('#browseStat').textContent = `为你找到 **${filtered.length}** 位在线陪玩`;
+
+  if(filtered.length === 0){
+    $('#browseGrid').innerHTML = '';
+    $('#browseEmpty').style.display = 'block';
+    return;
+  }
+  $('#browseEmpty').style.display = 'none';
+  $('#browseGrid').innerHTML = filtered.map(cardTpl).join('');
+  bindCardClick('#browseGrid .card');
+}
+
+function getBrowseList(){
+  return window.companions.filter(c=>{
+    const matchPrice = state.price === 'all' || c.price === state.price;
+    const matchLane = state.lane === 'all' || c.lanes.includes(state.lane);
+    return matchPrice && matchLane;
+  });
+}
+
+function cardTpl(it){
+  return `
+  <div class="card" data-video="${it.video||''}" data-name="${it.name||''}" data-desc="${(it.desc||'').replace(/"/g,'&quot;')}">
+    <div class="card-media">
+      <img src="${it.image||''}" alt="${it.name||''}">
+    </div>
+    <div class="card-info">
+      <div class="card-name">${it.name||''}</div>
+      <div class="card-meta">${it.price||''}r · ${(it.lanes||[]).join('/')}</div>
+    </div>
+  </div>`;
+}
+
+function bindCardClick(sel){
+  $$(sel).forEach(el=>{
+    el.onclick = ()=>{
+      const video = el.dataset.video||'';
+      const name = el.dataset.name||'';
+      const desc = el.dataset.desc||'';
+      openVideoModal(video,name,desc);
+    };
+  });
+}
+
+// ============================================================
+// 渲染服务清单
+// ============================================================
+async function renderService(){
+  const parts = [];
+  for(const s of SERVICE_ASSETS){
+    const ok = await tryFetch(s.file);
+    if(ok){
+      parts.push(`
+      <div class="service-item">
+        <div class="service-media">
+          <img src="${s.file}" alt="${s.name}">
+        </div>
+      </div>`);
+    }else{
+      parts.push(`
+      <div class="service-item">
+        <div class="service-placeholder">${s.name} 待上传图片</div>
+      </div>`);
     }
+  }
+  $('#serviceList').innerHTML = parts.join('');
 }
 
-//渲染服务页面
-async function renderServicePage(){
-    const wrap = document.getElementById('serviceWrap');
-    const serviceFiles = [
-        {name:"价格表",file:"assets/services/price.png"},
-        {name:"预存表",file:"assets/services/prepaid.png"},
-        {name:"礼物单",file:"assets/services/gift.png"},
-        {name:"活动图",file:"assets/services/activity.png"},
-    ];
-    let html = "";
-    for(let item of serviceFiles){
-        let hasFile = false;
-        try{
-            const resp = await fetch(item.file,{method:'HEAD'});
-            if(resp.ok) hasFile=true;
-        }catch(e){}
-        if(hasFile){
-            html += `
-            <div class="service-item-wrap">
-                <img class="service-img" src="${item.file}" alt="${item.name}">
-            </div>`
-        }else{
-            html += `
-            <div class="service-item-wrap">
-                <div class="service-tip">${item.name} 待上传图片</div>
-            </div>`
-        }
-    }
-    wrap.innerHTML = html;
+// ============================================================
+// 渲染管理层
+// ============================================================
+function renderManagement(){
+  const html = MANAGEMENT_LIST.map(m=>`
+  <div class="mgmt-card">
+    <div class="mgmt-title">${m.title}</div>
+    <div class="copy-wx" data-wx="${m.wx}">微信号：${m.wx}（点击复制）</div>
+  </div>`).join('')
+  +`<p class="mgmt-tip">☁️有任何问题都可以向管理层询问，我们会竭力保证宝宝们的游戏体验</p>`;
+  $('#mgmtWrap').innerHTML = html;
+
+  // copy wx
+  $$('.copy-wx').forEach(el=>{
+    el.onclick = ()=>copyText(el.dataset.wx);
+  });
 }
 
-//渲染分路按钮
-function renderLane(){
-    const laneWrap = document.getElementById('laneWrap');
-    let html = `<button class="lane-btn active" data-lane="all">全部分路</button>`;
-    window.lanes.forEach(l=>{
-        html += `<button class="lane-btn" data-lane="${l}">${l}</button>`
-    })
-    laneWrap.innerHTML = html;
+// ============================================================
+// 渲染搜索
+// ============================================================
+function renderSearch(){
+  const kw = (state.q||'').toLowerCase().trim();
+  const res = window.companions.filter(c=>{
+    const full = ((c.name||'')+' '+(c.pinyin||'')+' '+(c.shortPy||'')).toLowerCase();
+    return full.includes(kw);
+  });
+  if(!kw){
+    $('#searchGrid').innerHTML = '';
+    $('#searchEmpty').style.display = 'none';
+    return;
+  }
+  if(res.length === 0){
+    $('#searchGrid').innerHTML = '';
+    $('#searchEmpty').style.display = 'block';
+    return;
+  }
+  $('#searchEmpty').style.display = 'none';
+  $('#searchGrid').innerHTML = res.map(cardTpl).join('');
+  bindCardClick('#searchGrid .card');
 }
 
-//渲染价格筛选
-function renderPrice(){
-    const pWrap = document.getElementById('priceWrap');
-    let html = `<span class="price-tag active" data-price="all">全部(${getCount("all","all")})</span>`;
-    window.prices.forEach(p=>{
-        html += `<span class="price-tag" data-price="${p}">${p}r(${getCount(p,"all")})</span>`
-    })
-    pWrap.innerHTML = html;
+// ============================================================
+// 路由 / tab切换
+// ============================================================
+function route(){
+  $$('.tab-item').forEach(tab=>{
+    tab.onclick = ()=>{
+      const targetId = tab.dataset.to;
+      $$('.tab-item').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      $$('.view').forEach(v=>v.classList.remove('active'));
+      $('#'+targetId).classList.add('active');
+    };
+  });
 }
 
-//统计数量
-function getCount(price,lane){
-    return window.companions.filter(c=>{
-        const matchPrice = price==="all" || c.price === price;
-        const matchLane = lane==="all" || c.lanes.includes(lane);
-        return matchPrice && matchLane;
-    }).length
+// ============================================================
+// 筛选点击事件委托
+// ============================================================
+document.addEventListener('click',e=>{
+  const chip = e.target.closest('.chip');
+  if(!chip) return;
+  const val = chip.dataset.val;
+  if(chip.closest('#priceScroll')){
+    state.price = val;
+    renderBrowse();
+  }else if(chip.closest('#laneScroll')){
+    state.lane = val;
+    renderBrowse();
+  }
+});
+
+$('#browseResetBtn').onclick = ()=>{
+  state.price = 'all';
+  state.lane = 'all';
+  renderBrowse();
+};
+
+// ============================================================
+// 音介弹窗
+// ============================================================
+const modalVideo = $('#modalVideo');
+function openVideoModal(src,name,desc){
+  $('#modalName').textContent = name||'';
+  $('#modalDesc').textContent = desc||'';
+  if(src){
+    modalVideo.src = src;
+    modalVideo.style.display = 'block';
+    modalVideo.play().catch(()=>{});
+  }else{
+    modalVideo.removeAttribute('src');
+    modalVideo.style.display = 'none';
+  }
+  $('#videoModal').classList.add('open');
+  syncMuteIcon();
 }
 
-let curPrice = "all";
-let curLane = "all";
-
-//渲染卡片列表
-function renderCards(){
-    const wrap = document.getElementById("cardWrap");
-    const list = window.companions.filter(c=>{
-        const mp = curPrice==="all" || c.price === curPrice;
-        const ml = curLane==="all" || c.lanes.includes(curLane);
-        return mp && ml;
-    })
-    let html = "";
-    list.forEach(item=>{
-        html += `
-        <div class="play-card" data-video="${item.video??''}" data-name="${item.name}">
-            <div class="card-img-wrap">
-                <img class="card-img" src="${item.image}" alt="${item.name}">
-            </div>
-            <div class="card-info">
-                <div class="card-name">${item.name}</div>
-                <div class="card-meta">${item.price}r · ${item.lanes.join("/")}</div>
-            </div>
-        </div>`
-    })
-    wrap.innerHTML = html;
-    //卡片点击事件
-    document.querySelectorAll(".play-card").forEach(card=>{
-        card.onclick = function(){
-            const v = this.dataset.video;
-            const n = this.dataset.name;
-            const videoDom = document.getElementById("playVideo");
-            const nameDom = document.getElementById("videoName");
-            if(v){
-                videoDom.src = v;
-                videoDom.style.display = "block";
-            }else{
-                videoDom.style.display = "none";
-            }
-            nameDom.innerText = n;
-            document.getElementById("videoModal").classList.add("show");
-            if(v) videoDom.play();
-        }
-    })
+function closeVideoModal(){
+  $('#videoModal').classList.remove('open');
+  modalVideo.pause();
+  modalVideo.removeAttribute('src');
+  modalVideo.load();
+}
+function toggleMute(){
+  modalVideo.muted = !modalVideo.muted;
+  syncMuteIcon();
+}
+function syncMuteIcon(){
+  $('#muteIconOn').style.display = modalVideo.muted ? 'none' : 'block';
+  $('#muteIconOff').style.display = modalVideo.muted ? 'block' : 'none';
 }
 
-//搜索功能
-function searchHandle(keyword){
-    const resWrap = document.getElementById("searchResult");
-    if(!keyword.trim()){
-        resWrap.innerHTML = "";
-        return;
-    }
-    const kw = keyword.toLowerCase();
-    const result = window.companions.filter(c=>{
-        const fullText = (c.name +" "+ c.pinyin +" "+c.shortPy).toLowerCase();
-        return fullText.includes(kw);
-    })
-    let html = "";
-    result.forEach(item=>{
-        html += `
-        <div class="play-card" data-video="${item.video??''}" data-name="${item.name}">
-            <div class="card-img-wrap">
-                <img class="card-img" src="${item.image}" alt="${item.name}">
-            </div>
-            <div class="card-info">
-                <div class="card-name">${item.name}</div>
-                <div class="card-meta">${item.price}r · ${item.lanes.join("/")}</div>
-            </div>
-        </div>`
-    })
-    resWrap.innerHTML = html;
-    //搜索结果卡片点击
-    document.querySelectorAll("#searchResult .play-card").forEach(card=>{
-        card.onclick = function(){
-            const v = this.dataset.video;
-            const n = this.dataset.name;
-            const videoDom = document.getElementById("playVideo");
-            const nameDom = document.getElementById("videoName");
-            if(v){
-                videoDom.src = v;
-                videoDom.style.display = "block";
-            }else{
-                videoDom.style.display = "none";
-            }
-            nameDom.innerText = n;
-            document.getElementById("videoModal").classList.add("show");
-            if(v) videoDom.play();
-        }
-    })
+/* ============================================================
+   注意事项弹层
+   ============================================================ */
+function openNotes(){
+  $('#noteTitle').innerHTML = NOTES.title || '注意事项';
+  $('#noteList').innerHTML = (NOTES.items||[]).map((it,i) =>
+    `<div class="note-item"><span class="num">${i+1}</span><span>${it}</span></div>`).join('');
+  $('#noteModal').classList.add('open');
 }
+function closeNotes(){ $('#noteModal').classList.remove('open'); }
 
-//toast弹窗
-function showToast(msg){
-    const t = document.getElementById("toast");
-    t.innerText = msg;
-    t.style.display="block";
-    setTimeout(()=>t.style.display="none",1800);
-}
+/* ============================================================
+   禁止页面缩放
+   ============================================================ */
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('dblclick', e => e.preventDefault());
 
-//页面tab切换
-document.querySelectorAll(".tab-item").forEach(tab=>{
-    tab.onclick = function(){
-        const targetPage = this.dataset.page;
-        document.querySelectorAll(".tab-item").forEach(i=>i.classList.remove("active"));
-        document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-        this.classList.add("active");
-        document.getElementById(targetPage).classList.add("active");
-    }
-})
+/* ============================================================
+   初始化
+   ============================================================ */
+$('#searchInput').addEventListener('input', e => {
+  state.q = e.target.value;
+  renderSearch();
+});
+renderClub();
+renderBrowse();
+renderService();
+renderManagement();
+renderSearch();
+route();
+detectAssets();
 
-//事件绑定
-document.getElementById("helpBtn").onclick = function(){
-    document.getElementById("noticeModal").classList.add("show");
-}
-document.getElementById("closeNotice").onclick = function(){
-    document.getElementById("noticeModal").classList.remove("show");
-}
-document.getElementById("closeVideo").onclick = function(){
-    const v = document.getElementById("playVideo");
-    v.pause();
-    document.getElementById("videoModal").classList.remove("show");
-}
-
-//复制微信号
-document.querySelectorAll(".wx-copy").forEach(el=>{
-    el.onclick = async function(){
-        const wx = this.dataset.wx;
-        try{
-            await navigator.clipboard.writeText(wx);
-            showToast("已复制微信号");
-        }catch(e){
-            showToast("复制失败，请手动复制");
-        }
-    }
-})
-
-//分路筛选点击
-document.addEventListener("click",e=>{
-    if(e.target.classList.contains("lane-btn")){
-        document.querySelectorAll(".lane-btn").forEach(b=>b.classList.remove("active"));
-        e.target.classList.add("active");
-        curLane = e.target.dataset.lane;
-        renderPrice();
-        renderCards();
-    }
-})
-//价格筛选点击
-document.addEventListener("click",e=>{
-    if(e.target.classList.contains("price-tag")){
-        document.querySelectorAll(".price-tag").forEach(b=>b.classList.remove("active"));
-        e.target.classList.add("active");
-        curPrice = e.target.dataset.price;
-        renderCards();
-    }
-})
-
-//搜索输入
-document.getElementById("searchInput").addEventListener("input",function(e){
-    searchHandle(e.target.value)
-})
-
-//初始化
-async function init(){
-    await renderClubHeader();
-    await renderServicePage();
-    renderLane();
-    renderPrice();
-    renderCards();
-}
-window.onload = init;
+// ui事件绑定
+$('#modalCloseBtn').onclick = closeVideoModal;
+$('#muteBtn').onclick = toggleMute;
+$('#greetBtn').onclick = openNotes;
+$('#noteCloseBtn').onclick = closeNotes;
 </script>
 </body>
 </html>
