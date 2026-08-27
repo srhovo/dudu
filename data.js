@@ -5,6 +5,9 @@
    1. 自介卡图片（2096:1279 ≈ 5:3）→ assets/cards/
    2. 音介视频（建议转成 .mp4，比例 5:3）→ assets/voices/
    3. 在 companions 添加/修改条目，保存后 git push 即可
+   4. 管理层头像 → assets/management/（按职位命名，见下方 management 注释）
+   5. 服务清单图片（价格表/预存表/活动图/礼物单/结算标准）→ assets/services/
+      每栏可放多张图，每张图都有自己的自定义名字，见下方 services 注释
    ============================================================ */
 
 window.APP_DATA = {
@@ -46,14 +49,20 @@ window.APP_DATA = {
   ],
 
   /* ================= 服务清单 =================
-     价格表/预存表/礼物单/活动图 均以「图片形式」展示：
-     · 直接把图片命名为 assets/services/price.png、prepaid.png、gift.png、activity.png
-       上传即可自动生效（也支持 .jpg/.jpeg/.webp）
-     · 或在此手动填 image 路径；未配置时页面留出空间显示「待上传」
-     items 为文字版数据，保留用于搜索 */
+     价格表/预存表/活动图/礼物单/结算标准 —— 每一栏都支持「多张图片」，不限数量：
+     · images 是数组，每张图片一个 { name, image }：
+         name  —— 自定义标题（显示在图片上方，也用于搜索）
+         image —— 图片路径（assets/services/xxx.jpg）或外链
+     · 新增一张图片：直接在对应 images 数组里加一行 { name:'新的名字', image:'assets/services/新文件名.jpg' }，
+       图片放进 assets/services/ 文件夹，保存后 git push 即可（因为是纯静态站点，没法自动扫描文件夹，
+       所以每张图都要在这里写一行，但只是复制粘贴一行的工作量）
+     · images 留空数组 [] 时页面显示「待上传」
+     · items 为文字版数据（仅价格表/预存表/礼物单有），不在页面直接展示，只用于搜索匹配 */
   services: {
     price: {
-      image: '',
+      images: [
+        { name: '常驻价格表', image: 'assets/services/price.jpg' }
+      ],
       items: [
         { name: '娱乐陪玩',   meta: '随便玩玩 · 开心最重要', price: '15r/局' },
         { name: '五排车队',   meta: '满编车队 · 氛围拉满',   price: '18r/局' },
@@ -64,7 +73,9 @@ window.APP_DATA = {
       ]
     },
     prepaid: {
-      image: '',
+      images: [
+        { name: '预存活动表', image: 'assets/services/prepaid.jpg' }
+      ],
       items: [
         { name: '充 100',  amount: '到账 120',  bonus: '+20',  note: '新人尝鲜' },
         { name: '充 200',  amount: '到账 260',  bonus: '+60',  note: '人气之选' },
@@ -72,8 +83,15 @@ window.APP_DATA = {
         { name: '充 1000', amount: '到账 1500', bonus: '+500', note: '老板专属' }
       ]
     },
+    activity: {
+      images: [
+        { name: '新人首单8折', image: 'https://aka.doubaocdn.com/s/doUBGAHta4' }
+      ]
+    },
     gift: {
-      image: '',
+      images: [
+        { name: '礼物价目表', image: 'assets/services/gift.jpg' }
+      ],
       items: [
         { name: '小心心',   price: '1r',   color: '#E98A8A', ch: '心' },
         { name: '荧光棒',   price: '5r',   color: '#E0A24C', ch: '荧' },
@@ -84,21 +102,23 @@ window.APP_DATA = {
         { name: '梦幻城堡', price: '520r', color: '#4C9AD9', ch: '堡' }
       ]
     },
-    activity: {
-      /* 活动图：放入 assets/ 后填路径；留空 "" 则使用内置渐变底 */
-      image: 'https://aka.doubaocdn.com/s/doUBGAHta4',
-      tag:   '限时活动',
-      title: '新人首单 8 折',
-      sub:   '预约即享 · 周末开黑更划算 · 私聊领取'
+    settlement: {
+      /* 结算标准：新增的一栏，用法同上，先留空，等你上传图片后加一行即可 */
+      images: []
     }
   },
 
   /* ================= 管理层信息 =================
-     role 职位 / name 昵称 / v 微信号（点击卡片即可复制） */
+     role 职位 / name 昵称 / v 微信号（点击卡片即可复制） / avatar 头像（可选）
+     头像两种方式二选一：
+     · 按职位命名自动生效：把头像放进 assets/management/ 并按职位命名，如
+       assets/management/团长.jpg、副团.jpg、管理.jpg（.png/.jpeg/.webp 均可），无需改代码
+     · 或在下面 avatar 字段直接手动填路径（会优先用职位命名自动检测到的图，其次才用这里填的路径）
+     未提供头像时，页面用昵称首字显示占位圆形头像 */
   management: [
-    { role: '团长', name: '嘟嘟', v: 'keke-aoo' },
-    { role: '副团', name: '小翎', v: '_Elysia0304' },
-    { role: '管理', name: '小忆', v: 'YIk-xjw-fno4u' }
+    { role: '团长', name: '嘟嘟', v: 'keke-aoo', avatar: '' },
+    { role: '副团', name: '小翎', v: '_Elysia0304', avatar: '' },
+    { role: '管理', name: '小忆', v: 'YIk-xjw-fno4u', avatar: '' }
   ],
   managementNote: '☁️有任何问题都可以向管理层询问，我们会竭力保证宝宝们的游戏体验',
 
