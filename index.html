@@ -59,7 +59,7 @@
   /* ===== 页头 ===== */
   .page-head{position:relative;padding:6px 22px 10px}
   .page-eyebrow{font-size:13px;letter-spacing:.14em;color:#C98293;font-weight:600;margin-bottom:8px}
-  .page-title{font-family:'Noto Serif SC',serif;font-size:24px;font-weight:700;letter-spacing:.02em;margin:0}
+  .page-title{font-family:'ZCOOL KuaiLe','Noto Sans SC','PingFang SC',sans-serif;font-size:24px;font-weight:700;letter-spacing:.02em;margin:0}
   .page-sub{margin-top:8px;font-size:13px;color:var(--ink-2);font-weight:300}
   .head-search{
     position:absolute;top:0;right:22px;width:40px;height:40px;border-radius:50%;
@@ -70,10 +70,11 @@
   .head-search:hover{color:var(--accent);border-color:var(--accent)}
   .head-search svg{width:19px;height:19px}
 
-  /* ===== club 标题（图片形式，未上传则文字兜底） ===== */
-  .club-banner{display:flex;justify-content:center;margin:2px 0 16px;padding-right:52px}
-  .club-logo{max-width:100%;max-height:138px;object-fit:contain;border-radius:16px}
-  .club-eyebrow{font-size:16px;color:var(--pink);letter-spacing:.12em}
+  /* ===== club 标题（图片形式，未上传则文字兜底） =====
+     图片撑满屏幕宽度，高度按图片自身比例自动等比缩放（不裁切、不限高） */
+  .club-banner{margin:0 -22px 16px}
+  .club-logo{display:block;width:100%;height:auto;border-radius:0 0 var(--radius) var(--radius)}
+  .club-eyebrow{padding:20px 22px 0;font-size:16px;color:var(--pink);letter-spacing:.12em}
 
   /* ===== 筛选 chip ===== */
   .chip-row{display:flex;gap:8px;overflow-x:auto;padding:12px 22px 4px;scrollbar-width:none}
@@ -85,7 +86,7 @@
     transition:all .18s ease;white-space:nowrap;
   }
   .chip .cnt{font-size:11px;font-weight:400;color:var(--ink-3);font-variant-numeric:tabular-nums}
-  .chip.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(46,139,122,.22)}
+  .chip.active{background:var(--pink);border-color:var(--pink);color:#fff;box-shadow:0 6px 16px rgba(194,74,107,.22)}
   .chip.active .cnt{color:rgba(255,255,255,.78)}
 
   .filter-label{display:flex;align-items:center;gap:8px;padding:14px 22px 2px}
@@ -146,42 +147,40 @@
   }
   .seg-item.active{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 4px rgba(35,30,25,.06)}
 
-  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin:14px 22px 8px;overflow:hidden}
-  .panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 4px}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin:16px 22px 2px}
   .panel-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600}
   .panel-title .tick{width:3px;height:14px;border-radius:2px;background:var(--accent)}
   .updated{font-size:11px;color:var(--ink-3);background:var(--bg);padding:3px 9px;border-radius:999px;font-weight:400}
 
-  /* 服务图（图片形式） */
-  .sv-img{width:100%;height:auto;display:block}
-  .sv-ph{margin:12px;aspect-ratio:var(--media-ratio);border:1.5px dashed var(--line);border-radius:12px;background:#FBFAF7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:var(--ink-3)}
-  .sv-ph-t{font-size:13px;color:var(--ink-2);font-weight:500}
-  .sv-ph-s{font-size:11px}
-
-  /* 活动图 */
-  .act{position:relative;margin:14px 22px 8px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow)}
-  .act img{width:100%;aspect-ratio:var(--media-ratio);object-fit:cover}
-  .act-ph{width:100%;aspect-ratio:var(--media-ratio);background:linear-gradient(135deg,#2E8B7A,#6FB7A4 55%,#F0C987)}
-  .act-mask{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,30,26,0) 40%,rgba(20,30,26,.55) 100%)}
-  .act-updated{position:absolute;top:14px;right:14px;font-size:11px;color:#fff;background:rgba(20,18,15,.35);padding:3px 10px;border-radius:999px;backdrop-filter:blur(4px)}
-  .act-text{position:absolute;left:18px;right:18px;bottom:16px;color:#fff}
-  .act-tag{display:inline-block;font-size:10px;letter-spacing:.14em;background:rgba(255,255,255,.2);padding:3px 9px;border-radius:999px;backdrop-filter:blur(4px);margin-bottom:9px}
-  .act-title{font-family:'Noto Serif SC',serif;font-size:23px;font-weight:700;line-height:1.3}
-  .act-sub{font-size:12.5px;font-weight:300;opacity:.92;margin-top:6px}
+  /* ===== 服务图片墙：每栏可放多张图，每张图有自己的名字，点击查看大图 ===== */
+  .svc-list{padding:10px 22px 4px;display:flex;flex-direction:column;gap:16px}
+  .svc-card{cursor:pointer}
+  .svc-card-name{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink);margin:0 0 8px}
+  .svc-thumb{position:relative;aspect-ratio:16/10;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:var(--line);box-shadow:0 1px 2px rgba(35,30,25,.03);transition:box-shadow .18s ease}
+  .svc-card:hover .svc-thumb{box-shadow:var(--shadow)}
+  .svc-card:active .svc-thumb{transform:scale(.99)}
+  .svc-thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;transition:transform .35s ease}
+  .svc-card:hover .svc-thumb img{transform:scale(1.03)}
+  .svc-zoom{position:absolute;right:10px;bottom:10px;width:30px;height:30px;border-radius:50%;background:rgba(20,18,15,.45);color:#fff;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+  .svc-zoom svg{width:15px;height:15px}
+  .svc-empty{margin:10px 22px 4px;padding:40px 16px;border:1.5px dashed var(--line);border-radius:var(--radius);background:#FBFAF7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;color:var(--ink-3)}
+  .svc-empty-t{font-size:13px;color:var(--ink-2);font-weight:500}
+  .svc-empty-s{font-size:11px}
 
   /* ===== 管理层 ===== */
   .mg-list{padding:16px 22px 0;display:flex;flex-direction:column;gap:12px}
   .mg-card{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;box-shadow:0 1px 2px rgba(35,30,25,.03)}
   .mg-card:hover{box-shadow:var(--shadow)}
   .mg-card:active{transform:scale(.985)}
-  .mg-role{font-size:11px;font-weight:600;color:var(--accent-strong);background:var(--accent-soft);padding:3px 9px;border-radius:999px;flex:0 0 auto}
-  .mg-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#7FBFA9);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',serif;font-size:19px;font-weight:600;flex:0 0 auto}
+  .mg-role{font-size:11px;font-weight:600;color:var(--pink);background:var(--pink-soft);padding:3px 9px;border-radius:999px;flex:0 0 auto}
+  .mg-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#7FBFA9);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',serif;font-size:19px;font-weight:600;flex:0 0 auto;overflow:hidden}
+  .mg-avatar img{width:100%;height:100%;object-fit:cover}
   .mg-info{flex:1;min-width:0}
   .mg-name{font-size:15px;font-weight:600}
   .mg-v{margin-top:4px;font-size:12.5px;color:var(--ink-2);font-weight:300;display:flex;align-items:center;gap:7px;overflow:hidden}
   .mg-v .vlab{font-size:10px;color:var(--ink-3);border:1px solid var(--line);padding:1px 6px;border-radius:5px;flex:0 0 auto}
   .mg-v .vid{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .mg-copy{flex:0 0 auto;font-size:12px;font-weight:500;color:var(--accent-strong);background:var(--accent-soft);border:none;padding:8px 15px;border-radius:999px}
+  .mg-copy{flex:0 0 auto;font-size:12px;font-weight:500;color:var(--pink);background:var(--pink-soft);border:none;padding:8px 15px;border-radius:999px}
   .mg-note{margin:18px 22px 8px;padding:15px 16px;border-radius:14px;background:linear-gradient(135deg,var(--accent-soft),#FBF3EA);font-size:13px;color:var(--ink-2);font-weight:300;line-height:1.7;text-align:center}
 
   /* ===== 搜索页 ===== */
@@ -230,6 +229,9 @@
   .modal-media{position:relative;border-radius:20px;overflow:hidden;background:#000;border:1px solid rgba(255,255,255,.14);box-shadow:0 24px 60px rgba(0,0,0,.4)}
   .modal-media video{width:100%;aspect-ratio:var(--media-ratio);object-fit:cover;display:block}
   .modal-media img{width:100%;aspect-ratio:var(--media-ratio);object-fit:cover;object-position:center 22%}
+  /* 服务清单图片（价格表等长图/文档类图片）：完整显示不裁切，而不是套用陪玩卡的 5:3 裁切比例 */
+  .modal-box.svc-view .modal-media{display:flex;align-items:center;justify-content:center;max-height:78vh}
+  .modal-box.svc-view .modal-media img{width:auto;height:auto;max-width:100%;max-height:78vh;aspect-ratio:auto;object-fit:contain;object-position:center}
   .modal-mute{
     position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;
     background:rgba(20,18,15,.5);border:none;color:#fff;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);
@@ -399,7 +401,7 @@
 /* ============================================================
    数据入口
    ============================================================ */
-const DATA = window.APP_DATA || { lanes:[], prices:[], companions:[], services:{price:{items:[]},prepaid:{items:[]},gift:{items:[]},activity:{}}, management:[], notes:{title:'',items:[]} };
+const DATA = window.APP_DATA || { lanes:[], prices:[], companions:[], services:{price:{images:[],items:[]},prepaid:{images:[],items:[]},gift:{images:[],items:[]},activity:{images:[]},settlement:{images:[]}}, management:[], notes:{title:'',items:[]} };
 const LANES  = DATA.lanes && DATA.lanes.length ? ['全部'].concat(DATA.lanes) : ['全部','打野','中路','射手','辅助','上单','全能'];
 const PRICES = ['全部'].concat((DATA.prices && DATA.prices.length ? DATA.prices : [15,18,20,22,25,28,30,35,40]).map(String));
 const COMPANIONS = DATA.companions || [];
@@ -463,19 +465,18 @@ function renderClub(){
 
 /* 素材自动探测：约定路径下的文件存在则自动使用，无需改代码
    - club 标题图：assets/club-logo.png / club-title.png / club.png
-   - 服务图：assets/services/price.png / prepaid.png / gift.png / activity.png（也支持 .jpg/.jpeg/.webp） */
+   - 管理层头像：assets/management/团长.png（按 role 命名，也支持 .jpg/.jpeg/.webp）
+   服务清单图片已改为在 data.js 里显式列出路径（每张图都要有自定义名字，纯静态站点
+   没法自动扫描文件夹里有哪些文件），不再参与这里的自动探测 */
 const ASSET_BASES = {
-  club:     ['assets/club-logo','assets/club-title','assets/club'],
-  price:    ['assets/services/price'],
-  prepaid:  ['assets/services/prepaid'],
-  gift:     ['assets/services/gift'],
-  activity: ['assets/services/activity']
+  club: ['assets/club-logo','assets/club-title','assets/club']
 };
+(MANAGEMENT||[]).forEach(m => { if(m && m.role) ASSET_BASES['mg:'+m.role] = ['assets/management/'+m.role]; });
 function detectAssets(){
   const keys = Object.keys(ASSET_BASES);
   let ki = 0;
   function nextKey(){
-    if(ki >= keys.length){ renderClub(); renderService(); return; }
+    if(ki >= keys.length){ renderClub(); renderManagement(); return; }
     const k = keys[ki];
     const cands = [];
     (ASSET_BASES[k]||[]).forEach(b => ['png','jpg','jpeg','webp'].forEach(ext => cands.push(b+'.'+ext)));
@@ -489,6 +490,7 @@ function detectAssets(){
   }
   nextKey();
 }
+function mgAvatar(m){ return RESOLVED['mg:'+m.role] || (m&&m.avatar) || ''; }
 
 /* ============================================================
    渲染：挑选陪玩
@@ -560,9 +562,12 @@ const SERVICE_TABS = [
   {key:'price', label:'价格表'},
   {key:'prepaid', label:'预存表'},
   {key:'activity', label:'活动图'},
-  {key:'gift', label:'礼物单'}
+  {key:'gift', label:'礼物单'},
+  {key:'settlement', label:'结算标准'}
 ];
-const SERVICE_LABELS = {price:'价格表', prepaid:'预存表', gift:'礼物单', activity:'活动图'};
+const SERVICE_LABELS = {price:'价格表', prepaid:'预存表', gift:'礼物单', activity:'活动图', settlement:'结算标准'};
+const SVC_KEYS = SERVICE_TABS.map(t=>t.key);
+function svcImages(key){ return (SERVICES[key] && SERVICES[key].images) || []; }
 function renderService(){
   $('#serviceSeg').innerHTML = SERVICE_TABS.map(t =>
     `<button class="seg-item ${state.sub===t.key?'active':''}" onclick="setSub('${t.key}')">${t.label}</button>`
@@ -571,51 +576,47 @@ function renderService(){
 }
 function setSub(k){ state.sub = k; renderService(); }
 
+const ZOOM_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M11 8v6M8 11h6"/></svg>';
+
+/* 每栏支持多张图，每张图有自己的自定义名字（显示在缩略图上方，也可被搜索到）
+   点一张缩略图 → 复用陪玩自介卡同一套弹层看大图，不占用额外空间 */
 function subContent(key){
   const up = UPDATE_DATE ? `<span class="updated">更新于 ${UPDATE_DATE}</span>` : '';
-  if(key==='activity'){
-    const a = SERVICES.activity || {};
-    const img = RESOLVED.activity || a.image || '';
-    const media = img ? `<img class="sv-img" src="${img}" alt="活动图">` : `<div class="act-ph"></div>`;
-    return `
-      <div class="act">
-        ${media}
-        <div class="act-mask"></div>
-        <span class="act-updated">更新于 ${UPDATE_DATE||'-'}</span>
-        <div class="act-text">
-          <span class="act-tag">${a.tag||'活动'}</span>
-          <div class="act-title">${a.title||''}</div>
-          <div class="act-sub">${a.sub||''}</div>
-        </div>
-      </div>`;
-  }
-  const S = SERVICES[key] || {};
   const label = SERVICE_LABELS[key] || '';
-  const img = RESOLVED[key] || S.image || '';
-  const media = img
-    ? `<img class="sv-img" src="${img}" alt="${label}" loading="lazy">`
-    : `<div class="sv-ph"><span class="sv-ph-t">${label} · 待上传</span><span class="sv-ph-s">上传图片后自动展示</span></div>`;
-  return `
-    <div class="panel">
-      <div class="panel-head"><div class="panel-title"><span class="tick"></span>${label}</div>${up}</div>
-      ${media}
-    </div>`;
+  const list = svcImages(key);
+  const head = `<div class="panel-head"><div class="panel-title"><span class="tick"></span>${label}</div>${up}</div>`;
+  if(!list.length){
+    return head + `<div class="svc-empty"><span class="svc-empty-t">${label} · 待上传</span><span class="svc-empty-s">上传图片后自动展示</span></div>`;
+  }
+  const cards = list.map((it,i) => `
+    <div class="svc-card" onclick="openServiceImage('${key}',${i})">
+      <div class="svc-card-name">${it.name || label}</div>
+      <div class="svc-thumb">
+        <img src="${it.image||''}" alt="${it.name||label}" loading="lazy">
+        <span class="svc-zoom">${ZOOM_ICON}</span>
+      </div>
+    </div>`).join('');
+  return head + `<div class="svc-list">${cards}</div>`;
 }
 
 /* ============================================================
    渲染：管理层信息
    ============================================================ */
 function renderManagement(){
-  $('#mgList').innerHTML = (MANAGEMENT||[]).map(m => `
+  $('#mgList').innerHTML = (MANAGEMENT||[]).map(m => {
+    const av = mgAvatar(m);
+    const avatar = av ? `<img src="${av}" alt="${m.name}">` : (m.name||'?').charAt(0);
+    return `
     <div class="mg-card" onclick="copyV('${m.v}')">
       <span class="mg-role">${m.role}</span>
-      <div class="mg-avatar">${(m.name||'?').charAt(0)}</div>
+      <div class="mg-avatar">${avatar}</div>
       <div class="mg-info">
         <div class="mg-name">${m.name}</div>
         <div class="mg-v"><span class="vlab">微信号</span><span class="vid">${m.v}</span></div>
       </div>
       <button class="mg-copy">复制</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   const note = $('#mgNote');
   if(note) note.innerHTML = MG_NOTE;
 }
@@ -640,14 +641,66 @@ function showToast(msg){
 }
 
 /* ============================================================
+   搜索「热门」气泡
+   ------------------------------------------------------------
+   纯静态站点没有后端，没法做「全平台统计」，这里按当前设备/浏览器本地
+   记录每个可搜索全名的使用次数与最近使用时间（localStorage），换设备
+   或清缓存会重新开始统计——这点务必知悉。
+   候选池 = 所有分路 + 所有价位 + 所有陪玩名字 + 价格表/预存表/礼物单的
+   文字条目名字 + 服务清单每张图的自定义名字，凡是能被搜到的全名都算。
+   显示规则：前 5 个按「历史使用次数」从高到低；后 4 个从「使用次数
+   ≤4 次」的名字里按「最近使用时间」倒序取，凑不满 9 个用默认热词补齐。
+   ============================================================ */
+const HOT_KEY = 'dudu_hot_v1';
+const HOT_DEFAULT = ['中路','打野','20r','温柔','甜妹','全能'];
+function hotPool(){
+  const set = new Set();
+  LANES.forEach(l => { if(l!=='全部') set.add(l); });
+  PRICES.forEach(p => { if(p!=='全部') set.add(p+'r'); });
+  COMPANIONS.forEach(c => { if(c.name) set.add(c.name); });
+  ['price','prepaid','gift'].forEach(k => {
+    ((SERVICES[k]||{}).items||[]).forEach(it => { if(it.name) set.add(it.name); });
+  });
+  SVC_KEYS.forEach(k => { svcImages(k).forEach(im => { if(im.name) set.add(im.name); }); });
+  return set;
+}
+function loadHotStats(){
+  try{ return JSON.parse(localStorage.getItem(HOT_KEY)) || {}; }catch(e){ return {}; }
+}
+function saveHotStats(s){
+  try{ localStorage.setItem(HOT_KEY, JSON.stringify(s)); }catch(e){}
+}
+function recordHotUse(name){
+  if(!name || !hotPool().has(name)) return;
+  const stats = loadHotStats();
+  const cur = stats[name] || {count:0, last:0};
+  cur.count += 1;
+  cur.last = Date.now();
+  stats[name] = cur;
+  saveHotStats(stats);
+}
+function computeHotList(){
+  const stats = loadHotStats();
+  const pool = hotPool();
+  const entries = Object.keys(stats).filter(k => pool.has(k))
+    .map(k => ({name:k, count:stats[k].count||0, last:stats[k].last||0}));
+  const top5 = entries.slice().sort((a,b) => b.count-a.count || b.last-a.last).slice(0,5);
+  const top5Names = new Set(top5.map(e=>e.name));
+  const recent4 = entries.filter(e => !top5Names.has(e.name) && e.count<=4)
+    .sort((a,b) => b.last-a.last).slice(0,4);
+  const list = top5.concat(recent4).map(e=>e.name);
+  HOT_DEFAULT.forEach(h => { if(list.length<9 && !list.includes(h)) list.push(h); });
+  return list.slice(0,9);
+}
+
+/* ============================================================
    渲染：搜索
    ============================================================ */
-const HOT = ['中路','打野','20r','温柔','甜妹','全能'];
 function companionText(c){
   return [c.id||'', c.name, laneLabel(c), (c.price||'')+'r', c.intro||'', (c.tags||[]).join(' ')].join(' ');
 }
 function renderSearch(){
-  $('#hotRow').innerHTML = `<span class="cap">热门</span>` + HOT.map(h =>
+  $('#hotRow').innerHTML = `<span class="cap">热门</span>` + computeHotList().map(h =>
     `<button class="chip" onclick="doSearch('${h}')">${h}</button>`).join('');
   const q = state.q.trim();
   const box = $('#searchResult');
@@ -664,7 +717,14 @@ function renderSearch(){
   const ps = ((SERVICES.price||{}).items||[]).filter(p => matchItem(p.name+' '+(p.meta||'')+' '+p.price, pyOf(p.name+(p.meta||'')+p.price), q));
   const gs = ((SERVICES.gift||{}).items||[]).filter(g => matchItem(g.name+' '+g.price, pyOf(g.name+g.price), q));
   const pp = ((SERVICES.prepaid||{}).items||[]).filter(p => matchItem(p.name+' '+(p.amount||'')+' '+(p.note||''), pyOf(p.name+(p.amount||'')+(p.note||'')), q));
-  const total = cs.length + ps.length + gs.length + pp.length;
+  const svcMatches = [];
+  SVC_KEYS.forEach(k => {
+    svcImages(k).forEach((im,i) => {
+      const nm = im.name || '';
+      if(nm && matchItem(nm, pyOf(nm), q)) svcMatches.push({key:k, idx:i, name:nm, image:im.image||'', label:SERVICE_LABELS[k]||k});
+    });
+  });
+  const total = cs.length + ps.length + gs.length + pp.length + svcMatches.length;
   if(!total){
     box.innerHTML = `
       <div class="empty">
@@ -687,6 +747,18 @@ function renderSearch(){
           <div class="meta">${c.intro||(c.tags||[]).join(' / ')}</div>
         </div>
         <div class="r-price">${c.price}r</div>
+        <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </div>`;
+    }).join('');
+  }
+  if(svcMatches.length){
+    html += `<div class="group-title"><span class="tick"></span>服务 · 图片 ${svcMatches.length}</div>`;
+    html += svcMatches.map(m => {
+      const thumb = m.image ? `<img src="${m.image}" alt="${m.name}">` : `<div class="ph">图</div>`;
+      return `
+      <div class="srow" onclick="openServiceImage('${m.key}',${m.idx})">
+        ${thumb}
+        <div class="grow"><div class="name">${m.name}<span class="tag-sm">${m.label}</span></div></div>
         <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
       </div>`;
     }).join('');
@@ -719,6 +791,7 @@ function renderSearch(){
 function doSearch(h){
   state.q = h;
   $('#searchInput').value = h;
+  recordHotUse(h);
   renderSearch();
 }
 function jumpService(sub){
@@ -750,6 +823,7 @@ const modalImage = $('#modalImage');
 function openMedia(id){
   const c = COMPANIONS.find(x=>x.id===id);
   if(!c) return;
+  $('.modal-box').classList.remove('svc-view');
   $('#modalName').textContent = c.name;
   $('#modalMeta').textContent = `${laneLabel(c)} · ${c.price}r` + (c.intro ? ' · '+c.intro : '');
   modalVideo.pause();
@@ -774,6 +848,24 @@ function openMedia(id){
     modal.classList.add('open');
     $('#modalHint').textContent = '音介视频待上传，上传后点击此处将自动播放';
   }
+}
+/* 服务清单图片查看：复用陪玩自介卡的同一套弹层，点缩略图看大图 */
+function openServiceImage(key, idx){
+  const list = svcImages(key);
+  const it = list[idx];
+  if(!it) return;
+  $('.modal-box').classList.add('svc-view');
+  modalVideo.pause();
+  modalVideo.removeAttribute('src');
+  modalVideo.load();
+  modalVideo.style.display = 'none';
+  $('#modalMute').style.display = 'none';
+  modalImage.style.display = 'block';
+  modalImage.src = it.image || '';
+  $('#modalName').textContent = it.name || SERVICE_LABELS[key] || '';
+  $('#modalMeta').textContent = SERVICE_LABELS[key] || '';
+  $('#modalHint').textContent = '点击画面外区域关闭';
+  modal.classList.add('open');
 }
 function closeMedia(){
   modal.classList.remove('open');
@@ -812,6 +904,8 @@ document.addEventListener('dblclick', e => e.preventDefault());
    ============================================================ */
 $('#searchInput').addEventListener('input', e => {
   state.q = e.target.value;
+  const trimmed = state.q.trim();
+  if(trimmed) recordHotUse(trimmed);
   renderSearch();
 });
 renderClub();
